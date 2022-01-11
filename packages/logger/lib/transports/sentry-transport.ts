@@ -15,7 +15,12 @@ export class SentryTransport implements ITransport {
         Sentry.captureMessage(line);
         break;
       case LogLevel.Error:
-        error ? Sentry.captureException(error) : Sentry.captureException(line);
+        Sentry.withScope((scope) => {
+          scope.setExtra('log', line);
+          error
+            ? Sentry.captureException(error)
+            : Sentry.captureException(line);
+        });
         break;
       default:
     }
@@ -31,4 +36,4 @@ export interface ITag {
   value: string;
 }
 
-export default Sentry;
+export const SentryHandlers = Sentry.Handlers;
