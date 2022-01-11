@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "lib": ["DOM", "ES2020"],
+    "module": "CommonJS",
+    "declaration": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "exclude": ["node_modules", "**/*.spec.ts", "dist"]
+}
