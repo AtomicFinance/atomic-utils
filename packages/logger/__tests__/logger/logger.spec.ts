@@ -2,8 +2,6 @@ import { Logger, LogLevel } from '@node-dlc/logger';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sentryTestkit from 'sentry-testkit';
-import sinon from 'sinon';
-import waitForExpect from 'wait-for-expect';
 
 import {
   ITransport,
