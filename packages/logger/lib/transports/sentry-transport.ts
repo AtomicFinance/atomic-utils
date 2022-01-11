@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/node';
 
 export class SentryTransport implements ITransport {
   constructor(nodeOptions: Sentry.NodeOptions, tags: ITag[] = []) {
-    Sentry.init({ ...nodeOptions, release: 'test', tracesSampleRate: 1 });
+    Sentry.init({ ...nodeOptions });
     tags.forEach((tag) => {
       Sentry.setTag(tag.key, tag.value);
     });
