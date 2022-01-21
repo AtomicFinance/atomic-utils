@@ -1,10 +1,30 @@
 import chai from 'chai';
 
-import { composeInstrumentName, parseInstrumentName } from '../../lib';
+import {
+  composeInstrumentName,
+  getStrDate,
+  parseInstrumentName,
+} from '../../lib';
 
 const expect = chai.expect;
 
 describe('Deribit utilities', () => {
+  describe('getStrDate', () => {
+    it('should correctly build a Deribit formatted date for 14MAY22', () => {
+      const date = new Date(Date.UTC(2022, 4, 14, 8, 0, 0));
+      const strDate = getStrDate(date.getTime() / 1000);
+
+      expect(strDate).to.equal('14MAY22');
+    });
+
+    it('should correctly build a Deribit formatted date for 31DEC22', () => {
+      const date = new Date(Date.UTC(2022, 11, 31, 8, 0, 0));
+      const strDate = getStrDate(date.getTime() / 1000);
+
+      expect(strDate).to.equal('31DEC22');
+    });
+  });
+
   describe('composeInstrumentName', () => {
     it('should correctly compose a call option with $120,000 strike price', () => {
       const expiry = new Date('2019-01-01T08:00:00.000Z').getTime() / 1000;
@@ -82,6 +102,15 @@ describe('Deribit utilities', () => {
       expect(parsedExpiry).to.equal(expiry);
       expect(parsedStrikePrice).to.equal(strikePrice);
       expect(parsedType).to.equal(type);
+    });
+
+    it('should throw an error if the instrument name is invalid', () => {
+      const instrumentName = 'BTC-PERPETUAL-C';
+
+      expect(() => parseInstrumentName(instrumentName)).to.throw(
+        Error,
+        `Unsupported instrument name: ${instrumentName}`,
+      );
     });
   });
 });

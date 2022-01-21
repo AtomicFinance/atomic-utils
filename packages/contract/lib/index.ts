@@ -9,7 +9,13 @@ const p2wpkhSPK = Buffer.from(
   'hex',
 );
 
-const buildFinalizer = (feeRate: number) => {
+export const buildDualFundingTxFinalizer = (
+  feeRate: number,
+): DualFundingTxFinalizer => {
+  if (feeRate <= 0) {
+    throw new Error('Fee rate must be greater than 0');
+  }
+
   const fundingInput = new FundingInputV0();
 
   fundingInput.maxWitnessLen = 108;
@@ -42,7 +48,7 @@ export const calculatePostFeePremium = (
   premium: number,
   feeRate: number,
 ): number => {
-  const finalizer = buildFinalizer(feeRate);
+  const finalizer = buildDualFundingTxFinalizer(feeRate);
 
   const acceptFees = finalizer.acceptFees,
     offerFees = finalizer.offerFees;
@@ -70,7 +76,7 @@ export const calculatePreFeePremium = (
   premium: number,
   feeRate: number,
 ): number => {
-  const finalizer = buildFinalizer(feeRate);
+  const finalizer = buildDualFundingTxFinalizer(feeRate);
 
   const acceptFees = finalizer.acceptFees,
     offerFees = finalizer.offerFees;

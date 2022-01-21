@@ -1,6 +1,9 @@
 import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 
 import { roundBTC, toBTC, toSats } from '../../lib/bitcoin';
+
+chai.use(chaiAsPromised);
 
 const expect = chai.expect;
 
@@ -29,6 +32,12 @@ describe('Bitcoin formatting utilities', () => {
 
       expect(btc).to.equal(0.425);
     });
+
+    it('should throw an error if non-number characters are provided', () => {
+      expect(() => {
+        toBTC('1a');
+      }).to.throw(Error, 'Invalid number provided');
+    });
   });
 
   describe('toSats', () => {
@@ -54,6 +63,12 @@ describe('Bitcoin formatting utilities', () => {
       const sats = toSats(1423.12342);
 
       expect(sats).to.equal(142312342000);
+    });
+
+    it('should throw an error if non-number characters are provided', () => {
+      expect(() => {
+        toSats('1a');
+      }).to.throw(Error, 'Invalid number provided');
     });
   });
 

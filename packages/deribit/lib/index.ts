@@ -36,17 +36,30 @@ const EXPIRY_REGEX = /(\d{1,2})([A-Z]+)(\d{1,2})/;
 export const parseInstrumentName = (
   instrumentName: string,
 ): OptionInstrument => {
-  const [, expiryString, _strikePrice, typeSymbol] = instrumentName.split('-');
-  const [, day, month, year] = expiryString.match(EXPIRY_REGEX);
+  try {
+    const [, expiryString, _strikePrice, typeSymbol] =
+      instrumentName.split('-');
+    if (
+      !typeSymbol ||
+      !EXPIRY_REGEX.test(expiryString) ||
+      (typeSymbol !== 'C' && typeSymbol !== 'P')
+    ) {
+      throw new Error(`Only option instrument names are supported.`);
+    }
 
-  const expiry =
-    new Date(`${month}-${day}-${year} 08:00:00 GMT`).getTime() / 1000;
-  const strikePrice = parseInt(_strikePrice, 10);
-  const type = typeSymbol === 'C' ? 'call' : 'put';
+    const [, day, month, year] = expiryString.match(EXPIRY_REGEX);
 
-  return {
-    expiry,
-    strikePrice,
-    type,
-  };
+    const expiry =
+      new Date(`${month}-${day}-${year} 08:00:00 GMT`).getTime() / 1000;
+    const strikePrice = parseInt(_strikePrice, 10);
+    const type = typeSymbol === 'C' ? 'call' : 'put';
+
+    return {
+      expiry,
+      strikePrice,
+      type,
+    };
+  } catch (e) {
+    throw new Error(`Unsupported instrument name: ${instrumentName}`);
+  }
 };

@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 
 /**
  * Converts satoshis to BTC, rounds to the specified number of decimal places.
+ * Throws an error if non-number characters are provided.
  *
  * @param sats
  * @param decimalPlaces
@@ -9,6 +10,8 @@ import BigNumber from 'bignumber.js';
  */
 export function toBTC(sats: number | string, decimalPlaces?: number): number {
   const num = new BigNumber(sats).div(1e8);
+  if (num.isNaN()) throw new Error('Invalid number provided');
+
   if (decimalPlaces) {
     return +num.toFixed(decimalPlaces);
   }
@@ -22,7 +25,10 @@ export function toBTC(sats: number | string, decimalPlaces?: number): number {
  * @returns
  */
 export function toSats(btc: number | string): number {
-  return new BigNumber(btc).times(1e8).integerValue().toNumber();
+  const num = new BigNumber(btc);
+  if (num.isNaN()) throw new Error('Invalid number provided');
+
+  return num.times(1e8).integerValue().toNumber();
 }
 
 /**
