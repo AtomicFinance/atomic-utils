@@ -50,6 +50,16 @@ describe('Contract utilities', () => {
 
       expect(calculatedBestBidPrice).to.equal(bestBidPrice);
     });
+
+    it('should throw error when fee rate is less than 0', () => {
+      const premium = 8400000;
+      const fee = 0;
+
+      expect(() => calculatePreFeePremium(premium, fee)).to.throw(
+        Error,
+        `Fee rate must be greater than 0`,
+      );
+    });
   });
 
   describe('buildDualFundingTxFinalizer', () => {
