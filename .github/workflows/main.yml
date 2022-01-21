@@ -15,6 +15,9 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 16.x
+      - name: Create NPMRC
+        run: |
+            echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_TOKEN }}" >> ~/.npmrc
       - run: yarn
       - run: yarn bootstrap
       - run: yarn test

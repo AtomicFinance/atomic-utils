@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@atomicfinance/bitcoin-networks": "^2.4.1",
-    "@atomicfinance/constants": "github:AtomicFinance/atomic-constants",
+    "@atomicfinance/constants": "^0.1.0",
     "@atomic-utils/format": "^0.1.2",
     "@liquality/bitcoin-networks": "^1.12.0",
     "@node-dlc/core": "^0.12.4",
