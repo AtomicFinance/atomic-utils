@@ -31,7 +31,7 @@ describe('Logger', () => {
 
   it('should generate sentry warning report', async () => {
     sut.warn('testing failed');
-    await sleep(5);
+    await sleep(50);
 
     expect(testkit.reports()).is.not.empty;
     expect(testkit.reports()[0].message).to.match(
@@ -41,7 +41,7 @@ describe('Logger', () => {
 
   it('should generate sentry error report', async () => {
     sut.error(new Error('testing'));
-    await sleep(5);
+    await sleep(50);
 
     expect(testkit.reports()).is.not.empty;
     expect(testkit.reports()[0].error.message).to.equal('testing');
