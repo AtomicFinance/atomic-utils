@@ -1,22 +1,33 @@
 import { toSats } from '@atomic-utils/format';
 import chai from 'chai';
 
-import {
-  buildDualFundingTxFinalizer,
-  calculatePostFeePremium,
-  calculatePreFeePremium,
-} from '../../lib';
+import { buildDualFundingTxFinalizer, PremiumCalculator } from '../../lib';
 
 const expect = chai.expect;
 
 describe('Contract utilities', () => {
-  describe('calculatePreFeePremium / calculatePostFeePremium', () => {
+  describe('PremiumCalculator', () => {
+    let premiumCalculator: PremiumCalculator;
+
+    before(() => {
+      premiumCalculator = new PremiumCalculator({
+        serviceFees: 0.1,
+        mmDiscount: 0.1,
+      });
+    });
+
     it('should correctly calculate premium when using max premium', () => {
       const premium = toSats(0.0225);
       const feeRate = 5;
 
-      const postFreePremium = calculatePostFeePremium(premium, feeRate);
-      const preFeePremium = calculatePreFeePremium(postFreePremium, feeRate);
+      const postFreePremium = premiumCalculator.calculatePostFeePremium(
+        premium,
+        feeRate,
+      );
+      const preFeePremium = premiumCalculator.calculatePreFeePremium(
+        postFreePremium,
+        feeRate,
+      );
 
       expect(premium).to.equal(preFeePremium);
     });
@@ -25,8 +36,14 @@ describe('Contract utilities', () => {
       const premium = toSats(0.001);
       const feeRate = 70;
 
-      const postFreePremium = calculatePostFeePremium(premium, feeRate);
-      const preFeePremium = calculatePreFeePremium(postFreePremium, feeRate);
+      const postFreePremium = premiumCalculator.calculatePostFeePremium(
+        premium,
+        feeRate,
+      );
+      const preFeePremium = premiumCalculator.calculatePreFeePremium(
+        postFreePremium,
+        feeRate,
+      );
 
       expect(premium).to.equal(preFeePremium);
     });
@@ -38,14 +55,17 @@ describe('Contract utilities', () => {
       const bestBidPrice = 0.021;
       const expectedPremium = 8400000;
 
-      const actualPremium = calculatePostFeePremium(
+      const actualPremium = premiumCalculator.calculatePostFeePremium(
         bestBidPrice * contractSize,
         feeRate,
       );
 
       expect(expectedPremium).to.equal(actualPremium);
 
-      const preFeePremium = calculatePreFeePremium(expectedPremium, feeRate);
+      const preFeePremium = premiumCalculator.calculatePreFeePremium(
+        expectedPremium,
+        feeRate,
+      );
       const calculatedBestBidPrice = preFeePremium / contractSize;
 
       expect(calculatedBestBidPrice).to.equal(bestBidPrice);
@@ -55,10 +75,9 @@ describe('Contract utilities', () => {
       const premium = 8400000;
       const fee = 0;
 
-      expect(() => calculatePreFeePremium(premium, fee)).to.throw(
-        Error,
-        `Fee rate must be greater than 0`,
-      );
+      expect(() =>
+        premiumCalculator.calculatePreFeePremium(premium, fee),
+      ).to.throw(Error, `Fee rate must be greater than 0`);
     });
   });
 
