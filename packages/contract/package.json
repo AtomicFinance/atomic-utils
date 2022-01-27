@@ -1,6 +1,6 @@
 {
   "name": "@atomic-utils/contract",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Atomic Utils Contract",
   "scripts": {
     "test": "../../node_modules/.bin/nyc --reporter=lcov --reporter=text --extension=.ts ../../node_modules/.bin/mocha --require ts-node/register --recursive \"__tests__/**/*.spec.*\"",
@@ -23,7 +23,7 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@atomic-utils/format": "^0.1.4",
+    "@atomic-utils/format": "^0.1.5",
     "@atomicfinance/bitcoin-networks": "^2.4.1",
     "@liquality/bitcoin-networks": "^1.12.0",
     "@node-dlc/core": "^0.12.4",
