@@ -5,6 +5,13 @@ const p2wpkhSPK = Buffer.from(
   'hex',
 );
 
+/**
+ * Build a DualFundingTxFinalizer, which is used to
+ * help calculate contract premium after network fees (assuming 1 funding input for both parties)
+ *
+ * @param feeRate
+ * @returns DualFundingTxFinalizer
+ */
 export const buildDualFundingTxFinalizer = (
   feeRate: number,
 ): DualFundingTxFinalizer => {
@@ -40,12 +47,12 @@ export class PremiumCalculator {
   constructor(readonly feeConfig: FeeConfig) {}
 
   /**
-   * Calcuates the premium received by the contract offeror after fees.
+   * Calculates the premium received by the contract offeror after fees.
    *
    * If network fees exceed the fee collected by the service provider, no service fees are applied.
    *
-   * @param premium
-   * @param feeRate
+   * @param premium premium received by the contract offeror in sats
+   * @param feeRate sat/byte fee rate
    * @returns
    */
   calculatePostFeePremium = (premium: number, feeRate: number): number => {
@@ -70,10 +77,10 @@ export class PremiumCalculator {
   };
 
   /**
-   * Calcluate the premium received by the contract offeror before fees.
+   * Calculates the premium received by the contract offeror before fees.
    *
-   * @param premium
-   * @param feeRate
+   * @param premium premium received by the contract offeror in sats
+   * @param feeRate sat/byte fee rate
    * @returns
    */
   calculatePreFeePremium = (premium: number, feeRate: number): number => {

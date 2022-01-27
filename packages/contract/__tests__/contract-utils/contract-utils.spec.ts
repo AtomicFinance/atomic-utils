@@ -71,7 +71,7 @@ describe('Contract utilities', () => {
       expect(calculatedBestBidPrice).to.equal(bestBidPrice);
     });
 
-    it('should throw error when fee rate is less than 0', () => {
+    it('should throw error when fee rate is less than or equal to 0', () => {
       const premium = 8400000;
       const fee = 0;
 
