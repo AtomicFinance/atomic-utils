@@ -1,5 +1,11 @@
 import { OptionType } from '@node-dlc/core';
 
+/**
+ * Composes a Deribit formatted datestring for a given date.
+ *
+ * @param timestamp
+ * @returns deribit formatted datestring (e.g. '14MAY22')
+ */
 export const getStrDate = (timestamp: number): string => {
   const date = new Date(timestamp * 1000);
 
@@ -16,6 +22,14 @@ export const getStrDate = (timestamp: number): string => {
   return `${day}${month}${year}`;
 };
 
+/**
+ * An object returned by parseInstrumentName,
+ * which contains the expiry, strike price, and option type.
+ *
+ * @param expiry - expiry date in seconds since epoch
+ * @param strikePrice - strike price
+ * @param type - option type (call or put)
+ */
 type OptionInstrument = {
   expiry: number;
   strikePrice: number;
@@ -33,6 +47,12 @@ export const composeInstrumentName = ({
 };
 
 const EXPIRY_REGEX = /(\d{1,2})([A-Z]+)(\d{1,2})/;
+
+/**
+ * Parses an instrument name into its expiry (in seconds since epoch), strike price, and option type.
+ *
+ * @param instrumentName e.g. BTC-1JAN19-120000-C
+ */
 export const parseInstrumentName = (
   instrumentName: string,
 ): OptionInstrument => {
