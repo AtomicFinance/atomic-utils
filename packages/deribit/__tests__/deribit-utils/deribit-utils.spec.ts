@@ -27,7 +27,7 @@ describe('Deribit utilities', () => {
 
   describe('composeInstrumentName', () => {
     it('should correctly compose a call option with $120,000 strike price', () => {
-      const expiry = new Date('2019-01-01T08:00:00.000Z').getTime() / 1000;
+      const expiry = new Date('2019-01-01T08:00:00.000Z');
       const strikePrice = 120000;
       const type = 'call';
 
@@ -41,7 +41,7 @@ describe('Deribit utilities', () => {
     });
 
     it('should correctly compose a put option with $45,000 strike price', () => {
-      const expiry = new Date('2019-01-01T08:00:00.000Z').getTime() / 1000;
+      const expiry = new Date('2019-01-01T08:00:00.000Z');
       const strikePrice = 45000;
       const type = 'put';
 
@@ -57,7 +57,7 @@ describe('Deribit utilities', () => {
 
   describe('parseInstrumentName', () => {
     it('should correctly parse a call option with $120,000 strike price', () => {
-      const expiry = new Date('2019-01-01T08:00:00.000Z').getTime() / 1000;
+      const expiry = new Date('2019-01-01T08:00:00.000Z');
       const strikePrice = 120000;
       const type = 'call';
 
@@ -75,13 +75,13 @@ describe('Deribit utilities', () => {
         type: parsedType,
       } = parseInstrumentName(instrumentName);
 
-      expect(parsedExpiry).to.equal(expiry);
+      expect(parsedExpiry.getTime()).to.equal(expiry.getTime());
       expect(parsedStrikePrice).to.equal(strikePrice);
       expect(parsedType).to.equal(type);
     });
 
     it('should correctly parse a put option with $45,000 strike price', () => {
-      const expiry = new Date('2019-01-01T08:00:00.000Z').getTime() / 1000;
+      const expiry = new Date('2019-01-01T08:00:00.000Z');
       const strikePrice = 45000;
       const type = 'put';
 
@@ -99,7 +99,7 @@ describe('Deribit utilities', () => {
         type: parsedType,
       } = parseInstrumentName(instrumentName);
 
-      expect(parsedExpiry).to.equal(expiry);
+      expect(parsedExpiry.getTime()).to.equal(expiry.getTime());
       expect(parsedStrikePrice).to.equal(strikePrice);
       expect(parsedType).to.equal(type);
     });
