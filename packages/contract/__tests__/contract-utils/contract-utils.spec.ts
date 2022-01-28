@@ -71,13 +71,13 @@ describe('Contract utilities', () => {
       expect(calculatedBestBidPrice).to.equal(bestBidPrice);
     });
 
-    it('should throw error when fee rate is less than or equal to 0', () => {
+    it('should throw error when fee rate is less than zero', () => {
       const premium = 8400000;
-      const fee = 0;
+      const fee = -1;
 
       expect(() =>
         premiumCalculator.calculatePreFeePremium(premium, fee),
-      ).to.throw(Error, `Fee rate must be greater than 0`);
+      ).to.throw(Error, 'Fee rate must be non-negative');
     });
   });
 
@@ -93,12 +93,12 @@ describe('Contract utilities', () => {
       expect(offerFees).to.equal(BigInt(1055));
     });
 
-    it('should throw an error if fee rate is less than 0', () => {
+    it('should throw an error if fee rate is non-zero', () => {
       const feeRate = -5;
 
       expect(() => buildDualFundingTxFinalizer(feeRate)).to.throw(
         Error,
-        'Fee rate must be greater than 0',
+        'Fee rate must be non-negative',
       );
     });
   });

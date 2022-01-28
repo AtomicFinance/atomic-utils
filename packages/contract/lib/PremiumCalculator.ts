@@ -15,8 +15,8 @@ const p2wpkhSPK = Buffer.from(
 export const buildDualFundingTxFinalizer = (
   feeRate: number,
 ): DualFundingTxFinalizer => {
-  if (feeRate <= 0) {
-    throw new Error('Fee rate must be greater than 0');
+  if (feeRate < 0) {
+    throw new Error('Fee rate must be non-negative');
   }
 
   const fundingInput = new FundingInputV0();
