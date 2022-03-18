@@ -34,9 +34,9 @@ describe('Bitcoin formatting utilities', () => {
     });
 
     it('should throw an error if non-number characters are provided', () => {
-      expect(() => {
-        toBTC('1a');
-      }).to.throw(Error, 'Invalid number provided');
+      const btc = toBTC('1a');
+
+      expect(isNaN(btc)).to.be.true;
     });
   });
 
@@ -65,10 +65,10 @@ describe('Bitcoin formatting utilities', () => {
       expect(sats).to.equal(142312342000);
     });
 
-    it('should throw an error if non-number characters are provided', () => {
-      expect(() => {
-        toSats('1a');
-      }).to.throw(Error, 'Invalid number provided');
+    it('should return NaN if invalid number is provided', () => {
+      const sats = toSats('1a');
+
+      expect(isNaN(sats)).to.be.true;
     });
   });
 

@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
  */
 export function toBTC(sats: number | string, decimalPlaces?: number): number {
   const num = new BigNumber(sats).div(1e8);
-  if (num.isNaN()) throw new Error('Invalid number provided');
+  if (num.isNaN()) return NaN;
 
   if (decimalPlaces) {
     return +num.toFixed(decimalPlaces);
@@ -26,7 +26,7 @@ export function toBTC(sats: number | string, decimalPlaces?: number): number {
  */
 export function toSats(btc: number | string): number {
   const num = new BigNumber(btc);
-  if (num.isNaN()) throw new Error('Invalid number provided');
+  if (num.isNaN()) return NaN;
 
   return num.times(1e8).integerValue().toNumber();
 }
