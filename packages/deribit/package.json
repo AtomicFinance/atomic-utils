@@ -24,15 +24,13 @@
   },
   "dependencies": {
     "@atomic-utils/format": "^0.1.8",
-    "@atomicfinance/bitcoin-networks": "^2.4.1",
-    "@liquality/bitcoin-networks": "^1.12.0",
-    "@node-dlc/core": "^0.18.3",
-    "@node-dlc/logger": "0.18.3",
-    "@node-dlc/messaging": "^0.18.3",
+    "@node-dlc/core": "^0.19.2",
+    "@node-dlc/logger": "^0.19.2",
+    "@node-dlc/messaging": "^0.19.2",
     "@sentry/node": "6.16.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.7",
+    "@types/node": "16.10.3",
     "sentry-testkit": "3.3.7",
     "wait-for-expect": "3.0.2"
   },

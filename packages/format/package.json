@@ -27,7 +27,7 @@
     "bignumber.js": "^9.0.2"
   },
   "devDependencies": {
-    "@types/node": "^14.0.13",
+    "@types/node": "16.10.3",
     "sentry-testkit": "3.3.7",
     "wait-for-expect": "3.0.2"
   },
