@@ -1,9 +1,12 @@
+import { getStrDate } from '@atomic-utils/deribit';
 import chai, { expect } from 'chai';
 import sinonChai from 'sinon-chai';
 
 import { MONTH_NAMES } from '../../lib';
 import {
   getCsoEvent,
+  getCsoEventDates,
+  getCsoEventId,
   getCurrentCycleMaturityDate,
   getLastFridayInMonth,
   getNextCycleMaturityDate,
@@ -41,217 +44,311 @@ describe('CSO utilities', () => {
     }
   });
 
-  describe('getCurrentCycleMaturityDate', () => {
-    it('should correctly calculate maturity date mid-year', () => {
-      // example maturity June 24th, 2022
+  describe('Cycle Maturity Helper Functions', () => {
+    // example maturity June 24th, 2022
+    const midYearDates = {
+      prevMaturity: new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0)),
+      oneDayBefore: new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0)),
+      rightBefore: new Date(Date.UTC(2022, 5, 24, 7, 59, 59, 0)), // dlcExpiry
+      atMaturity: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // dlcExpiry
+      rightAfter: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1)),
+      sevenHoursAfter: new Date(Date.UTC(2022, 5, 24, 15, 0, 0, 0)), // dlcAttestation
+      eightHoursAfter: new Date(Date.UTC(2022, 5, 24, 16, 0, 0, 0)), // rolloverOpen
+      oneDayAfter: new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0)),
+      thirtyTwoHoursAfter: new Date(Date.UTC(2022, 5, 25, 16, 0, 0, 0)), // newEntryOpen
+      sixtyEightHoursAfter: new Date(Date.UTC(2022, 5, 27, 4, 0, 0, 0)), // newEntryClosed
+      seventySixHoursAfter: new Date(Date.UTC(2022, 5, 27, 12, 0, 0, 0)), // tradingOpen
+      oneWeekAfter: new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0)),
+      twoWeeksAfter: new Date(Date.UTC(2022, 6, 15, 4, 0, 0, 0)), // halfMonthEntryClosed
+      twoWeeksBeforeNext: new Date(Date.UTC(2022, 6, 15, 12, 0, 0, 0)), // tradingOpenHalfMonth
+      oneWeekBeforeNext: new Date(Date.UTC(2022, 6, 22, 8, 0, 0, 0)),
+      nextMaturity: new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0)), // dlcExpiry
+      finalMaturity: new Date(Date.UTC(2022, 7, 26, 8, 0, 0, 0)), // dlcExpiry
+    };
 
-      const oneDayBefore = new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1));
-      const oneDayAfter = new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0));
-      const oneWeekAfter = new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0));
-      const nextMaturity = new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0));
+    // example maturity Dec 30th, 2022
+    const endYearDates = {
+      prevMaturity: new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0)),
+      oneDayBefore: new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0)),
+      rightBefore: new Date(Date.UTC(2022, 11, 30, 7, 59, 59, 0)),
+      atMaturity: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // dlcExpiry
+      rightAfter: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1)),
+      sevenHoursAfter: new Date(Date.UTC(2022, 11, 30, 15, 0, 0, 0)), // dlcAttestation
+      eightHoursAfter: new Date(Date.UTC(2022, 11, 30, 16, 0, 0, 0)), // rolloverOpen
+      oneDayAfter: new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0)),
+      thirtyTwoHoursAfter: new Date(Date.UTC(2022, 11, 31, 16, 0, 0, 0)), // newEntryOpen
+      sixtyEightHoursAfter: new Date(Date.UTC(2023, 0, 2, 4, 0, 0, 0)), // newEntryClosed
+      seventySixHoursAfter: new Date(Date.UTC(2023, 0, 2, 12, 0, 0, 0)), // tradingOpen
+      oneWeekAfter: new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0)),
+      twoWeeksAfter: new Date(Date.UTC(2023, 0, 13, 4, 0, 0, 0)), // halfMonthEntryClosed
+      twoWeeksBeforeNext: new Date(Date.UTC(2023, 0, 13, 12, 0, 0, 0)), // tradingOpenHalfMonth
+      oneWeekBeforeNext: new Date(Date.UTC(2023, 0, 20, 8, 0, 0, 0)),
+      nextMaturity: new Date(Date.UTC(2023, 0, 27, 8, 0, 0, 0)), // dlcExpiry
+      finalMaturity: new Date(Date.UTC(2023, 1, 24, 8, 0, 0, 0)), // dlcExpiry
+    };
 
-      const lastFridayOneDayBefore = getCurrentCycleMaturityDate(oneDayBefore);
-      const lastFridayAtMaturity = getCurrentCycleMaturityDate(atMaturity);
-      const lastFridayRightAfter = getCurrentCycleMaturityDate(rightAfter);
-      const lastFridayOneDayAfter = getCurrentCycleMaturityDate(oneDayAfter);
-      const lastFridayOneWeekAfter = getCurrentCycleMaturityDate(oneWeekAfter);
+    describe('getCurrentCycleMaturityDate', () => {
+      for (let i = 0; i < 2; i++) {
+        const period = i === 0 ? 'mid-year' : 'end-of-year';
 
-      expect(lastFridayOneDayBefore.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayAtMaturity.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayRightAfter.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayOneDayAfter.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayOneWeekAfter.getTime()).to.equal(nextMaturity.getTime());
+        const {
+          oneDayBefore,
+          atMaturity,
+          rightAfter,
+          oneDayAfter,
+          oneWeekAfter,
+          nextMaturity,
+        } = i === 0 ? midYearDates : endYearDates;
+
+        it(`should correctly calculate current cycle maturity date ${period}`, () => {
+          const lastFridayOneDayBefore =
+            getCurrentCycleMaturityDate(oneDayBefore);
+          const lastFridayAtMaturity = getCurrentCycleMaturityDate(atMaturity);
+          const lastFridayRightAfter = getCurrentCycleMaturityDate(rightAfter);
+          const lastFridayOneDayAfter =
+            getCurrentCycleMaturityDate(oneDayAfter);
+          const lastFridayOneWeekAfter =
+            getCurrentCycleMaturityDate(oneWeekAfter);
+
+          expect(lastFridayOneDayBefore.getTime()).to.equal(
+            atMaturity.getTime(),
+          );
+          expect(lastFridayAtMaturity.getTime()).to.equal(
+            nextMaturity.getTime(),
+          );
+          expect(lastFridayRightAfter.getTime()).to.equal(
+            nextMaturity.getTime(),
+          );
+          expect(lastFridayOneDayAfter.getTime()).to.equal(
+            nextMaturity.getTime(),
+          );
+          expect(lastFridayOneWeekAfter.getTime()).to.equal(
+            nextMaturity.getTime(),
+          );
+        });
+      }
     });
 
-    it('should correctly calculate maturity date end-of-year', () => {
-      // example maturity Dec 30th, 2022
+    describe('getNextCycleMaturityDate', () => {
+      for (let i = 0; i < 2; i++) {
+        const period = i === 0 ? 'mid-year' : 'end-of-year';
 
-      const oneDayBefore = new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1));
-      const oneDayAfter = new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0));
-      const oneWeekAfter = new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0));
-      const nextMaturity = new Date(Date.UTC(2023, 0, 27, 8, 0, 0, 0));
+        const {
+          oneDayBefore,
+          atMaturity,
+          rightAfter,
+          oneDayAfter,
+          oneWeekAfter,
+          nextMaturity,
+          finalMaturity,
+        } = i === 0 ? midYearDates : endYearDates;
 
-      const lastFridayOneDayBefore = getCurrentCycleMaturityDate(oneDayBefore);
-      const lastFridayAtMaturity = getCurrentCycleMaturityDate(atMaturity);
-      const lastFridayRightAfter = getCurrentCycleMaturityDate(rightAfter);
-      const lastFridayOneDayAfter = getCurrentCycleMaturityDate(oneDayAfter);
-      const lastFridayOneWeekAfter = getCurrentCycleMaturityDate(oneWeekAfter);
+        it(`should correctly calculate next cycle maturity date ${period}`, () => {
+          const lastFridayOneDayBefore = getNextCycleMaturityDate(oneDayBefore);
+          const lastFridayAtMaturity = getNextCycleMaturityDate(atMaturity);
+          const lastFridayRightAfter = getNextCycleMaturityDate(rightAfter);
+          const lastFridayOneDayAfter = getNextCycleMaturityDate(oneDayAfter);
+          const lastFridayOneWeekAfter = getNextCycleMaturityDate(oneWeekAfter);
 
-      expect(lastFridayOneDayBefore.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayAtMaturity.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayRightAfter.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayOneDayAfter.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayOneWeekAfter.getTime()).to.equal(nextMaturity.getTime());
-    });
-  });
-
-  describe('getNextCycleMaturityDate', () => {
-    it('should correctly calculate maturity date mid-year', () => {
-      // example maturity June 24th, 2022
-
-      const oneDayBefore = new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1));
-      const oneDayAfter = new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0));
-      const oneWeekAfter = new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0));
-      const nextMaturity = new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0));
-      const finalMaturity = new Date(Date.UTC(2022, 7, 26, 8, 0, 0, 0));
-
-      const lastFridayOneDayBefore = getNextCycleMaturityDate(oneDayBefore);
-      const lastFridayAtMaturity = getNextCycleMaturityDate(atMaturity);
-      const lastFridayRightAfter = getNextCycleMaturityDate(rightAfter);
-      const lastFridayOneDayAfter = getNextCycleMaturityDate(oneDayAfter);
-      const lastFridayOneWeekAfter = getNextCycleMaturityDate(oneWeekAfter);
-
-      expect(lastFridayOneDayBefore.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayAtMaturity.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayRightAfter.getTime()).to.equal(finalMaturity.getTime());
-      expect(lastFridayOneDayAfter.getTime()).to.equal(finalMaturity.getTime());
-      expect(lastFridayOneWeekAfter.getTime()).to.equal(
-        finalMaturity.getTime(),
-      );
+          expect(lastFridayOneDayBefore.getTime()).to.equal(
+            nextMaturity.getTime(),
+          );
+          expect(lastFridayAtMaturity.getTime()).to.equal(
+            finalMaturity.getTime(),
+          );
+          expect(lastFridayRightAfter.getTime()).to.equal(
+            finalMaturity.getTime(),
+          );
+          expect(lastFridayOneDayAfter.getTime()).to.equal(
+            finalMaturity.getTime(),
+          );
+          expect(lastFridayOneWeekAfter.getTime()).to.equal(
+            finalMaturity.getTime(),
+          );
+        });
+      }
     });
 
-    it('should correctly calculate maturity date end-of-year', () => {
-      // example maturity Dec 30th, 2022
+    describe('getPreviousCycleMaturityDate', () => {
+      for (let i = 0; i < 2; i++) {
+        const period = i === 0 ? 'mid-year' : 'end-of-year';
 
-      const oneDayBefore = new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1));
-      const oneDayAfter = new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0));
-      const oneWeekAfter = new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0));
-      const nextMaturity = new Date(Date.UTC(2023, 0, 27, 8, 0, 0, 0));
-      const finalMaturity = new Date(Date.UTC(2023, 1, 24, 8, 0, 0, 0));
+        const {
+          prevMaturity,
+          oneDayBefore,
+          atMaturity,
+          rightAfter,
+          oneDayAfter,
+          oneWeekAfter,
+        } = i === 0 ? midYearDates : endYearDates;
 
-      const lastFridayOneDayBefore = getNextCycleMaturityDate(oneDayBefore);
-      const lastFridayAtMaturity = getNextCycleMaturityDate(atMaturity);
-      const lastFridayRightAfter = getNextCycleMaturityDate(rightAfter);
-      const lastFridayOneDayAfter = getNextCycleMaturityDate(oneDayAfter);
-      const lastFridayOneWeekAfter = getNextCycleMaturityDate(oneWeekAfter);
+        it(`should correctly calculate previous cycle maturity date ${period}`, () => {
+          const lastFridayOneDayBefore =
+            getPreviousCycleMaturityDate(oneDayBefore);
+          const lastFridayAtMaturity = getPreviousCycleMaturityDate(atMaturity);
+          const lastFridayRightAfter = getPreviousCycleMaturityDate(rightAfter);
+          const lastFridayOneDayAfter =
+            getPreviousCycleMaturityDate(oneDayAfter);
+          const lastFridayOneWeekAfter =
+            getPreviousCycleMaturityDate(oneWeekAfter);
 
-      expect(lastFridayOneDayBefore.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayAtMaturity.getTime()).to.equal(nextMaturity.getTime());
-      expect(lastFridayRightAfter.getTime()).to.equal(finalMaturity.getTime());
-      expect(lastFridayOneDayAfter.getTime()).to.equal(finalMaturity.getTime());
-      expect(lastFridayOneWeekAfter.getTime()).to.equal(
-        finalMaturity.getTime(),
-      );
-    });
-  });
-
-  describe('getPreviousCycleMaturityDate', () => {
-    it('should correctly calculate maturity date mid-year', () => {
-      // example maturity June 24th, 2022
-
-      const prevMaturity = new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0));
-      const oneDayBefore = new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1));
-      const oneDayAfter = new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0));
-      const oneWeekAfter = new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0));
-
-      const lastFridayOneDayBefore = getPreviousCycleMaturityDate(oneDayBefore);
-      const lastFridayAtMaturity = getPreviousCycleMaturityDate(atMaturity);
-      const lastFridayRightAfter = getPreviousCycleMaturityDate(rightAfter);
-      const lastFridayOneDayAfter = getPreviousCycleMaturityDate(oneDayAfter);
-      const lastFridayOneWeekAfter = getPreviousCycleMaturityDate(oneWeekAfter);
-
-      expect(lastFridayOneDayBefore.getTime()).to.equal(prevMaturity.getTime());
-      expect(lastFridayAtMaturity.getTime()).to.equal(prevMaturity.getTime());
-      expect(lastFridayRightAfter.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayOneDayAfter.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayOneWeekAfter.getTime()).to.equal(atMaturity.getTime());
+          expect(lastFridayOneDayBefore.getTime()).to.equal(
+            prevMaturity.getTime(),
+          );
+          expect(lastFridayAtMaturity.getTime()).to.equal(atMaturity.getTime());
+          expect(lastFridayRightAfter.getTime()).to.equal(atMaturity.getTime());
+          expect(lastFridayOneDayAfter.getTime()).to.equal(
+            atMaturity.getTime(),
+          );
+          expect(lastFridayOneWeekAfter.getTime()).to.equal(
+            atMaturity.getTime(),
+          );
+        });
+      }
     });
 
-    it('should correctly calculate maturity date end-of-year', () => {
-      // example maturity Dec 30th, 2022
+    describe('getCsoEvent', () => {
+      for (let i = 0; i < 2; i++) {
+        const period = i === 0 ? 'mid-year' : 'end-of-year';
 
-      const prevMaturity = new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0));
-      const oneDayBefore = new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1));
-      const oneDayAfter = new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0));
-      const oneWeekAfter = new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0));
+        const {
+          oneDayBefore,
+          atMaturity,
+          rightAfter,
+          sevenHoursAfter,
+          eightHoursAfter,
+          thirtyTwoHoursAfter,
+          sixtyEightHoursAfter,
+          seventySixHoursAfter,
+          twoWeeksAfter,
+          twoWeeksBeforeNext,
+          nextMaturity,
+        } = i === 0 ? midYearDates : endYearDates;
 
-      const lastFridayOneDayBefore = getPreviousCycleMaturityDate(oneDayBefore);
-      const lastFridayAtMaturity = getPreviousCycleMaturityDate(atMaturity);
-      const lastFridayRightAfter = getPreviousCycleMaturityDate(rightAfter);
-      const lastFridayOneDayAfter = getPreviousCycleMaturityDate(oneDayAfter);
-      const lastFridayOneWeekAfter = getPreviousCycleMaturityDate(oneWeekAfter);
+        it(`should correctly determine cso event ${period}`, () => {
+          const oneDayBeforeCsoEvent = getCsoEvent(oneDayBefore);
+          const atMaturityCsoEvent = getCsoEvent(atMaturity);
+          const rightAfterCsoEvent = getCsoEvent(rightAfter);
+          const sevenHoursAfterCsoEvent = getCsoEvent(sevenHoursAfter);
+          const eightHoursAfterCsoEvent = getCsoEvent(eightHoursAfter);
+          const thirtyTwoHoursAfterCsoEvent = getCsoEvent(thirtyTwoHoursAfter);
+          const sixtyEightHoursAfterCsoEvent =
+            getCsoEvent(sixtyEightHoursAfter);
+          const seventySixHoursAfterCsoEvent =
+            getCsoEvent(seventySixHoursAfter);
+          const twoWeeksAfterCsoEvent = getCsoEvent(twoWeeksAfter);
+          const twoWeeksBeforeNextCsoEvent = getCsoEvent(twoWeeksBeforeNext);
+          const nextMaturityCsoEvent = getCsoEvent(nextMaturity);
 
-      expect(lastFridayOneDayBefore.getTime()).to.equal(prevMaturity.getTime());
-      expect(lastFridayAtMaturity.getTime()).to.equal(prevMaturity.getTime());
-      expect(lastFridayRightAfter.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayOneDayAfter.getTime()).to.equal(atMaturity.getTime());
-      expect(lastFridayOneWeekAfter.getTime()).to.equal(atMaturity.getTime());
-    });
-  });
-
-  describe('getCsoEvent', () => {
-    it('should correctly calculate maturity date mid-year', () => {
-      // example maturity June 24th, 2022
-
-      const oneDayBefore = new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1));
-      const sevenHoursAfter = new Date(Date.UTC(2022, 5, 24, 15, 0, 0, 0));
-      const eightHoursAfter = new Date(Date.UTC(2022, 5, 24, 16, 0, 0, 0));
-      const thirtyTwoHoursAfter = new Date(Date.UTC(2022, 5, 25, 16, 0, 0, 0));
-      const sixtyEightHoursAfter = new Date(Date.UTC(2022, 5, 27, 4, 0, 0, 0));
-      const seventySixHoursAfter = new Date(Date.UTC(2022, 5, 27, 12, 0, 0, 0));
-
-      const oneDayBeforeCsoEvent = getCsoEvent(oneDayBefore);
-      const atMaturityCsoEvent = getCsoEvent(atMaturity);
-      const rightAfterCsoEvent = getCsoEvent(rightAfter);
-      const sevenHoursAfterCsoEvent = getCsoEvent(sevenHoursAfter);
-      const eightHoursAfterCsoEvent = getCsoEvent(eightHoursAfter);
-      const thirtyTwoHoursAfterCsoEvent = getCsoEvent(thirtyTwoHoursAfter);
-      const sixtyEightHoursAfterCsoEvent = getCsoEvent(sixtyEightHoursAfter);
-      const seventySixHoursAfterCsoEvent = getCsoEvent(seventySixHoursAfter);
-
-      expect(oneDayBeforeCsoEvent).to.equal('tradingOpen');
-      expect(atMaturityCsoEvent).to.equal('dlcExpiry');
-      expect(rightAfterCsoEvent).to.equal('dlcExpiry');
-      expect(sevenHoursAfterCsoEvent).to.equal('dlcAttestation');
-      expect(eightHoursAfterCsoEvent).to.equal('rolloverOpen');
-      expect(thirtyTwoHoursAfterCsoEvent).to.equal('newEntryOpen');
-      expect(sixtyEightHoursAfterCsoEvent).to.equal('newEntryClosed');
-      expect(seventySixHoursAfterCsoEvent).to.equal('tradingOpen');
+          expect(oneDayBeforeCsoEvent).to.equal('tradingOpenHalfMonth');
+          expect(atMaturityCsoEvent).to.equal('dlcExpiry');
+          expect(rightAfterCsoEvent).to.equal('dlcExpiry');
+          expect(sevenHoursAfterCsoEvent).to.equal('dlcAttestation');
+          expect(eightHoursAfterCsoEvent).to.equal('rolloverOpen');
+          expect(thirtyTwoHoursAfterCsoEvent).to.equal('newEntryOpen');
+          expect(sixtyEightHoursAfterCsoEvent).to.equal('newEntryClosed');
+          expect(seventySixHoursAfterCsoEvent).to.equal('tradingOpen');
+          expect(twoWeeksAfterCsoEvent).to.equal('halfMonthEntryClosed');
+          expect(twoWeeksBeforeNextCsoEvent).to.equal('tradingOpenHalfMonth');
+          expect(nextMaturityCsoEvent).to.equal('dlcExpiry');
+        });
+      }
     });
 
-    it('should correctly calculate maturity date end-of-year', () => {
-      // example maturity Dec 30th, 2022
+    describe('getCsoEventId', () => {
+      for (let i = 0; i < 2; i++) {
+        const period = i === 0 ? 'mid-year' : 'end-of-year';
 
-      const oneDayBefore = new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0));
-      const atMaturity = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0));
-      const rightAfter = new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1));
-      const sevenHoursAfter = new Date(Date.UTC(2022, 11, 30, 15, 0, 0, 0));
-      const eightHoursAfter = new Date(Date.UTC(2022, 11, 30, 16, 0, 0, 0));
-      const thirtyTwoHoursAfter = new Date(Date.UTC(2022, 11, 31, 16, 0, 0, 0));
-      const sixtyEightHoursAfter = new Date(Date.UTC(2023, 0, 2, 4, 0, 0, 0));
-      const seventySixHoursAfter = new Date(Date.UTC(2023, 0, 2, 12, 0, 0, 0));
+        const {
+          rightBefore,
+          atMaturity,
+          rightAfter,
+          oneWeekAfter,
+          oneWeekBeforeNext,
+          nextMaturity,
+        } = i === 0 ? midYearDates : endYearDates;
 
-      const oneDayBeforeCsoEvent = getCsoEvent(oneDayBefore);
-      const atMaturityCsoEvent = getCsoEvent(atMaturity);
-      const rightAfterCsoEvent = getCsoEvent(rightAfter);
-      const sevenHoursAfterCsoEvent = getCsoEvent(sevenHoursAfter);
-      const eightHoursAfterCsoEvent = getCsoEvent(eightHoursAfter);
-      const thirtyTwoHoursAfterCsoEvent = getCsoEvent(thirtyTwoHoursAfter);
-      const sixtyEightHoursAfterCsoEvent = getCsoEvent(sixtyEightHoursAfter);
-      const seventySixHoursAfterCsoEvent = getCsoEvent(seventySixHoursAfter);
+        it(`should correctly calculate CSO Event ID ${period}`, () => {
+          const csoEventDetails = [
+            'atomic',
+            'call_spread_v1',
+            'monthly',
+          ] as const;
 
-      expect(oneDayBeforeCsoEvent).to.equal('tradingOpen');
-      expect(atMaturityCsoEvent).to.equal('dlcExpiry');
-      expect(rightAfterCsoEvent).to.equal('dlcExpiry');
-      expect(sevenHoursAfterCsoEvent).to.equal('dlcAttestation');
-      expect(eightHoursAfterCsoEvent).to.equal('rolloverOpen');
-      expect(thirtyTwoHoursAfterCsoEvent).to.equal('newEntryOpen');
-      expect(sixtyEightHoursAfterCsoEvent).to.equal('newEntryClosed');
-      expect(seventySixHoursAfterCsoEvent).to.equal('tradingOpen');
+          const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
+            getCsoEventDates(atMaturity);
+          const {
+            tradingOpen: nextTradingOpen,
+            upcomingDlcExpiry: nextDlcExpiry,
+          } = getCsoEventDates(nextMaturity);
+
+          const rightBeforeCsoEventId = getCsoEventId(
+            rightBefore,
+            ...csoEventDetails,
+          );
+          const atMaturityCsoEventId = getCsoEventId(
+            atMaturity,
+            ...csoEventDetails,
+          );
+          const rightAfterCsoEventId = getCsoEventId(
+            rightAfter,
+            ...csoEventDetails,
+          );
+          const oneWeekAfterCsoEventId = getCsoEventId(
+            oneWeekAfter,
+            ...csoEventDetails,
+          );
+          const oneWeekBeforeNextCsoEventId = getCsoEventId(
+            oneWeekBeforeNext,
+            ...csoEventDetails,
+          );
+
+          // atomic-call_spread_v1-monthly-27JUN22-29JUL22
+          expect(rightBeforeCsoEventId).to.equal(
+            [
+              ...csoEventDetails,
+              getStrDate(tradingOpen),
+              getStrDate(upcomingDlcExpiry),
+            ].join('-'),
+          );
+
+          // atomic-call_spread_v1-monthly-27JUN22-29JUL22
+          expect(atMaturityCsoEventId).to.equal(
+            [
+              ...csoEventDetails,
+              getStrDate(tradingOpen),
+              getStrDate(upcomingDlcExpiry),
+            ].join('-'),
+          );
+
+          // atomic-call_spread_v1-monthly-27JUN22-29JUL22
+          expect(rightAfterCsoEventId).to.equal(
+            [
+              ...csoEventDetails,
+              getStrDate(tradingOpen),
+              getStrDate(upcomingDlcExpiry),
+            ].join('-'),
+          );
+
+          // atomic-call_spread_v1-monthly-15JUL22-29JUL22
+          expect(oneWeekAfterCsoEventId).to.equal(
+            [
+              ...csoEventDetails,
+              getStrDate(tradingOpenHalfMonth),
+              getStrDate(upcomingDlcExpiry),
+            ].join('-'),
+          );
+
+          // atomic-call_spread_v1-monthly-1AUG22-26AUG22
+          expect(oneWeekBeforeNextCsoEventId).to.equal(
+            [
+              ...csoEventDetails,
+              getStrDate(nextTradingOpen),
+              getStrDate(nextDlcExpiry),
+            ].join('-'),
+          );
+        });
+      }
     });
   });
 });

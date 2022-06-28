@@ -23,7 +23,8 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@sentry/node": "6.16.1"
+    "@sentry/node": "6.16.1",
+    "@atomic-utils/deribit": "^0.1.9"
   },
   "devDependencies": {
     "sentry-testkit": "3.3.7",

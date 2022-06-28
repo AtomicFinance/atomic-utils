@@ -4,13 +4,22 @@ export type CsoEvent =
   | 'rolloverOpen'
   | 'newEntryOpen'
   | 'newEntryClosed'
-  | 'tradingOpen';
+  | 'tradingOpen'
+  | 'halfMonthEntryClosed'
+  | 'tradingOpenHalfMonth';
+
+export type CsoPeriod = 'weekly' | 'monthly' | 'bimonthly';
+export type CsoLength = 'fullmonth' | 'halfmonth';
 
 export const DLC_EXPIRY_LEN = 7;
 export const DLC_ATTESTATION_LEN = 1;
 export const ROLLOVER_OPEN_LEN = 24;
 export const NEW_ENTRY_OPEN_LEN = 36;
 export const NEW_ENTRY_CLOSED_LEN = 8;
+export const HALF_MONTH_ENTRY_CLOSED_LEN = 8;
+export const TRADING_OPEN_HALF_MONTH_LEN = 332;
+
+import { getStrDate } from '@atomic-utils/deribit';
 
 /**
  * getLastFridayInMonth
@@ -45,7 +54,7 @@ export const getCurrentCycleMaturityDate = (t_: Date): Date => {
   let m = t.getUTCMonth() + 1;
   let lastFriday = getLastFridayInMonth(y, m);
 
-  if (t > lastFriday) {
+  if (t >= lastFriday) {
     t.setUTCMonth(t.getUTCMonth() + 1);
 
     y = t.getUTCFullYear();
@@ -89,17 +98,23 @@ export const getPreviousCycleMaturityDate = (t_: Date): Date => {
   return previousLastFriday;
 };
 
-/**
- * getCsoEvent
- *
- * @param {Date} t_ current time
- * @returns {CsoEvent} which cso event the date provided is within
- */
-export const getCsoEvent = (t_: Date): CsoEvent => {
+export interface CsoEventDates {
+  previousDlcExpiry: Date;
+  dlcAttestation: Date;
+  rolloverOpen: Date;
+  newEntryOpen: Date;
+  newEntryClosed: Date;
+  tradingOpen: Date;
+  halfMonthEntryClosed: Date;
+  tradingOpenHalfMonth: Date;
+  upcomingDlcExpiry: Date;
+}
+
+export const getCsoEventDates = (t_: Date): CsoEventDates => {
   const t = new Date(t_.getTime());
 
-  const previousDlcExpiry = getPreviousCycleMaturityDate(t);
   const upcomingDlcExpiry = getCurrentCycleMaturityDate(t);
+  const previousDlcExpiry = getPreviousCycleMaturityDate(t);
 
   const dlcAttestation = new Date(previousDlcExpiry.getTime());
   dlcAttestation.setUTCHours(dlcAttestation.getUTCHours() + DLC_EXPIRY_LEN);
@@ -112,6 +127,49 @@ export const getCsoEvent = (t_: Date): CsoEvent => {
   const tradingOpen = new Date(newEntryClosed.getTime());
   tradingOpen.setUTCHours(tradingOpen.getUTCHours() + NEW_ENTRY_CLOSED_LEN);
 
+  const tradingOpenHalfMonth = new Date(upcomingDlcExpiry.getTime());
+  tradingOpenHalfMonth.setUTCHours(
+    tradingOpenHalfMonth.getUTCHours() - TRADING_OPEN_HALF_MONTH_LEN,
+  );
+  const halfMonthEntryClosed = new Date(tradingOpenHalfMonth.getTime());
+  halfMonthEntryClosed.setUTCHours(
+    halfMonthEntryClosed.getUTCHours() - HALF_MONTH_ENTRY_CLOSED_LEN,
+  );
+
+  return {
+    previousDlcExpiry,
+    dlcAttestation,
+    rolloverOpen,
+    newEntryOpen,
+    newEntryClosed,
+    tradingOpen,
+    halfMonthEntryClosed,
+    tradingOpenHalfMonth,
+    upcomingDlcExpiry,
+  };
+};
+
+/**
+ * getCsoEvent
+ *
+ * @param {Date} t_ current time
+ * @returns {CsoEvent} which cso event the date provided is within
+ */
+export const getCsoEvent = (t_: Date): CsoEvent => {
+  const t = new Date(t_.getTime());
+
+  const {
+    previousDlcExpiry,
+    dlcAttestation,
+    rolloverOpen,
+    newEntryOpen,
+    newEntryClosed,
+    tradingOpen,
+    halfMonthEntryClosed,
+    tradingOpenHalfMonth,
+    upcomingDlcExpiry,
+  } = getCsoEventDates(t);
+
   switch (true) {
     case t >= previousDlcExpiry && t < dlcAttestation:
       return 'dlcExpiry';
@@ -123,9 +181,76 @@ export const getCsoEvent = (t_: Date): CsoEvent => {
       return 'newEntryOpen';
     case t >= newEntryClosed && t < tradingOpen:
       return 'newEntryClosed';
-    case t >= tradingOpen && t < upcomingDlcExpiry:
+    case t >= tradingOpen && t < halfMonthEntryClosed:
       return 'tradingOpen';
+    case t >= halfMonthEntryClosed && t < tradingOpenHalfMonth:
+      return 'halfMonthEntryClosed';
+    case t >= tradingOpenHalfMonth && t < upcomingDlcExpiry:
+      return 'tradingOpenHalfMonth';
     case t.getTime() === upcomingDlcExpiry.getTime():
       return 'dlcExpiry';
+  }
+};
+
+/**
+ * getCsoEventId
+ *
+ * Pass in Date and return event ID of announcement that user can enter into immediately
+ *
+ * @param {Date} t_ current time
+ * @param {string} provider company or trader providing strategy
+ * @param {string} strategyId unique identifier for strategy
+ * @param {CsoPeriod} period i.e. monthly
+ * @returns {string} event ID string i.e. atomic-call_spread_v1-monthly-27JUN22-29JUL22
+ */
+export const getCsoEventId = (
+  t_: Date,
+  provider: string,
+  strategyId: string,
+  period: CsoPeriod,
+): string => {
+  const t = new Date(t_.getTime());
+
+  const csoEvent = getCsoEvent(t);
+
+  const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
+    getCsoEventDates(t);
+
+  if (
+    csoEvent === 'halfMonthEntryClosed' ||
+    csoEvent === 'tradingOpenHalfMonth'
+  ) {
+    // Create full month for next month
+    const nextT = new Date(upcomingDlcExpiry.getTime() + 1);
+
+    const { tradingOpen: nextTradingOpen, upcomingDlcExpiry: nextDlcExpiry } =
+      getCsoEventDates(nextT);
+
+    return [
+      provider,
+      strategyId,
+      period,
+      getStrDate(nextTradingOpen),
+      getStrDate(nextDlcExpiry),
+    ].join('-');
+  } else if (csoEvent === 'newEntryClosed' || csoEvent === 'tradingOpen') {
+    // Create half month event ID
+
+    return [
+      provider,
+      strategyId,
+      period,
+      getStrDate(tradingOpenHalfMonth),
+      getStrDate(upcomingDlcExpiry),
+    ].join('-');
+  } else {
+    // Create full month for current month
+    return [
+      provider,
+      strategyId,
+      period,
+      getStrDate(tradingOpen),
+      getStrDate(upcomingDlcExpiry),
+    ].join('-');
   }
 };
