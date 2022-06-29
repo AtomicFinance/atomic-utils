@@ -233,8 +233,6 @@ describe('Time utilities', () => {
         mockStrategy,
       );
 
-      console.log(calculatedMinutesUntilEnd);
-
       expect(calculatedMinutesUntilEnd).to.equal(TIME_MINUTES._7days);
     });
   });

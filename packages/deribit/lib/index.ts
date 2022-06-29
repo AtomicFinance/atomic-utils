@@ -3,11 +3,11 @@ import { OptionType } from '@node-dlc/core';
 /**
  * Composes a Deribit formatted datestring for a given date.
  *
- * @param timestamp
+ * @param date Date or timestamp in seconds
  * @returns deribit formatted datestring (e.g. '14MAY22')
  */
-export const getStrDate = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
+export const getStrDate = (date: number | Date): string => {
+  if (typeof date === 'number') date = new Date(date * 1000);
 
   const day = date.getUTCDate();
   const month = date
