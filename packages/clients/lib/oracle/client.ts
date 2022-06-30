@@ -5,31 +5,10 @@ import axios, {
   AxiosRequestConfig,
   AxiosRequestHeaders,
   AxiosResponse,
+  Method,
 } from 'axios';
 
 import { IOracleOptions } from './options';
-
-export type Method =
-  | 'get'
-  | 'GET'
-  | 'delete'
-  | 'DELETE'
-  | 'head'
-  | 'HEAD'
-  | 'options'
-  | 'OPTIONS'
-  | 'post'
-  | 'POST'
-  | 'put'
-  | 'PUT'
-  | 'patch'
-  | 'PATCH'
-  | 'purge'
-  | 'PURGE'
-  | 'link'
-  | 'LINK'
-  | 'unlink'
-  | 'UNLINK';
 
 const API_PREFIX = 'api/v1';
 
