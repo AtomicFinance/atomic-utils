@@ -21,6 +21,7 @@ export interface Announcement {
   eventId: string;
   offerId: string;
   announcement: string;
+  attestation?: string;
   cso: boolean;
   startDate: number;
   endDate: number;
