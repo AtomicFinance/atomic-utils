@@ -98,18 +98,6 @@ export const getPreviousCycleMaturityDate = (t_: Date): Date => {
   return previousLastFriday;
 };
 
-export interface CsoEventDates {
-  previousDlcExpiry: Date;
-  dlcAttestation: Date;
-  rolloverOpen: Date;
-  newEntryOpen: Date;
-  newEntryClosed: Date;
-  tradingOpen: Date;
-  halfMonthEntryClosed: Date;
-  tradingOpenHalfMonth: Date;
-  upcomingDlcExpiry: Date;
-}
-
 export const getCsoEventDates = (t_: Date): CsoEventDates => {
   const t = new Date(t_.getTime());
 
@@ -193,6 +181,52 @@ export const getCsoEvent = (t_: Date): CsoEvent => {
 };
 
 /**
+ * getCsoStartAndEndDate
+ *
+ * Pass in current time and get start and end date of event that user can enter into
+ * immediately
+ *
+ * @param t_ current time
+ * @returns {StartEndDates} start and end dates of the CSO event
+ */
+export const getCsoStartAndEndDate = (t_: Date): StartEndDates => {
+  const t = new Date(t_.getTime());
+
+  const csoEvent = getCsoEvent(t);
+
+  const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
+    getCsoEventDates(t);
+
+  if (
+    csoEvent === 'halfMonthEntryClosed' ||
+    csoEvent === 'tradingOpenHalfMonth'
+  ) {
+    // Create full month for next month
+    const nextT = new Date(upcomingDlcExpiry.getTime() + 1);
+
+    const { tradingOpen: nextTradingOpen, upcomingDlcExpiry: nextDlcExpiry } =
+      getCsoEventDates(nextT);
+
+    return {
+      startDate: nextTradingOpen,
+      endDate: nextDlcExpiry,
+    };
+  } else if (csoEvent === 'newEntryClosed' || csoEvent === 'tradingOpen') {
+    // Create half month event ID
+    return {
+      startDate: tradingOpenHalfMonth,
+      endDate: upcomingDlcExpiry,
+    };
+  } else {
+    // Create full month for current month
+    return {
+      startDate: tradingOpen,
+      endDate: upcomingDlcExpiry,
+    };
+  }
+};
+
+/**
  * getCsoEventId
  *
  * Pass in Date and return event ID of announcement that user can enter into immediately
@@ -211,46 +245,30 @@ export const getCsoEventId = (
 ): string => {
   const t = new Date(t_.getTime());
 
-  const csoEvent = getCsoEvent(t);
+  const { startDate, endDate } = getCsoStartAndEndDate(t);
 
-  const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
-    getCsoEventDates(t);
-
-  if (
-    csoEvent === 'halfMonthEntryClosed' ||
-    csoEvent === 'tradingOpenHalfMonth'
-  ) {
-    // Create full month for next month
-    const nextT = new Date(upcomingDlcExpiry.getTime() + 1);
-
-    const { tradingOpen: nextTradingOpen, upcomingDlcExpiry: nextDlcExpiry } =
-      getCsoEventDates(nextT);
-
-    return [
-      provider,
-      strategyId,
-      period,
-      getStrDate(nextTradingOpen),
-      getStrDate(nextDlcExpiry),
-    ].join('-');
-  } else if (csoEvent === 'newEntryClosed' || csoEvent === 'tradingOpen') {
-    // Create half month event ID
-
-    return [
-      provider,
-      strategyId,
-      period,
-      getStrDate(tradingOpenHalfMonth),
-      getStrDate(upcomingDlcExpiry),
-    ].join('-');
-  } else {
-    // Create full month for current month
-    return [
-      provider,
-      strategyId,
-      period,
-      getStrDate(tradingOpen),
-      getStrDate(upcomingDlcExpiry),
-    ].join('-');
-  }
+  return [
+    provider,
+    strategyId,
+    period,
+    getStrDate(startDate),
+    getStrDate(endDate),
+  ].join('-');
 };
+
+export interface StartEndDates {
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface CsoEventDates {
+  previousDlcExpiry: Date;
+  dlcAttestation: Date;
+  rolloverOpen: Date;
+  newEntryOpen: Date;
+  newEntryClosed: Date;
+  tradingOpen: Date;
+  halfMonthEntryClosed: Date;
+  tradingOpenHalfMonth: Date;
+  upcomingDlcExpiry: Date;
+}
