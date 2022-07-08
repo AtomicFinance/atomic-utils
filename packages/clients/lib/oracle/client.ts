@@ -116,7 +116,7 @@ export class OracleClient {
       timeout: 20000,
       method,
       params,
-      data,
+      data: method === 'GET' ? undefined : data,
       responseType: 'json',
     };
 
