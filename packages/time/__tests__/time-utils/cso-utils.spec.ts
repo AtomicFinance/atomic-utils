@@ -353,7 +353,7 @@ describe('CSO utilities', () => {
       }
     });
 
-    describe.only('getParamsFromCsoEventId', () => {
+    describe('getParamsFromCsoEventId', () => {
       for (let i = 0; i < 2; i++) {
         const period = i === 0 ? 'mid-year' : 'end-of-year';
 
@@ -421,7 +421,7 @@ describe('CSO utilities', () => {
             upcomingDlcExpiry.getTime(),
           );
 
-          // atomic-call_spread_v1-monthly-1JUL22-22JUL22
+          // atomic-call_spread_v1-monthly-1AUG22-26AUG22
           expect(startDateSecondMonth.getTime()).to.equal(
             nextTradingOpen.getTime(),
           );
@@ -429,12 +429,18 @@ describe('CSO utilities', () => {
             nextDlcExpiry.getTime(),
           );
 
-          console.log('oneWeekAfter', oneWeekAfter);
-          console.log('oneWeekBeforeNext', oneWeekBeforeNext);
-          console.log('otherStartDate', otherStartDate);
-          console.log('otherEndDate', otherEndDate);
-
-          // expect()
+          /**
+           * atomic-call_spread_v1-monthly-1JUL22-22JUL22
+           * non standard event ID
+           * (start and end date aren't tradingOpen,
+           *  tradingHalfMonthOpen, or dlcExpiry)
+           */
+          expect(oneWeekAfter.getUTCDate()).to.equal(
+            otherStartDate.getUTCDate(),
+          );
+          expect(oneWeekBeforeNext.getUTCDate()).to.equal(
+            otherEndDate.getUTCDate(),
+          );
         });
       }
 
@@ -462,6 +468,8 @@ describe('CSO utilities', () => {
     });
 
     describe('extractCsoEventIdDateFromStr', () => {
+      // These dates were previously resulting in incorrect current or previous dlc expiry
+
       it('should extract correct date for trading open', () => {
         const dateStr = '30JAN23';
         const date = extractCsoEventIdDateFromStr(dateStr);
