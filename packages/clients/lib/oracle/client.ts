@@ -174,14 +174,13 @@ export class OracleClient {
       this.opts.logger.debug(
         'Make sure the Oracle Service is running and that you are connecting to the correct port',
       );
+    } else if (error.code === 'EPIPE') {
+      this.opts.logger.error(`EPIPE error ${this.opts.uri}`);
     } else if (error.response) {
       this.opts.logger.error(error.response.data);
       throw new Error(error.response.data as string);
-    } else if (error.code === 'EPIPE') {
-      this.opts.logger.error(`EPIPE error ${this.opts.uri}`);
     } else {
-      this.opts.logger.error(error.message);
-      throw new Error(error.message);
+      throw error;
     }
   };
 }
