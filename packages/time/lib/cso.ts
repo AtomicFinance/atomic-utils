@@ -21,6 +21,8 @@ export const TRADING_OPEN_HALF_MONTH_LEN = 332;
 
 import { getStrDate } from '@atomic-utils/deribit';
 
+export const STR_DATE_REGEX = /(\d{1,2})([A-Z]+)(\d{1,2})/;
+
 /**
  * getLastFridayInMonth
  *
@@ -55,6 +57,7 @@ export const getCurrentCycleMaturityDate = (t_: Date): Date => {
   let lastFriday = getLastFridayInMonth(y, m);
 
   if (t >= lastFriday) {
+    t.setUTCDate(1);
     t.setUTCMonth(t.getUTCMonth() + 1);
 
     y = t.getUTCFullYear();
@@ -92,7 +95,7 @@ export const getPreviousCycleMaturityDate = (t_: Date): Date => {
 
   const currentLastFriday = getCurrentCycleMaturityDate(t);
   currentLastFriday.setUTCMonth(currentLastFriday.getUTCMonth() - 1);
-  currentLastFriday.setUTCDate(currentLastFriday.getDate() - 7);
+  currentLastFriday.setUTCDate(currentLastFriday.getDate() - 14);
   const previousLastFriday = getCurrentCycleMaturityDate(currentLastFriday);
 
   return previousLastFriday;
@@ -256,9 +259,91 @@ export const getCsoEventId = (
   ].join('-');
 };
 
+/**
+ * getStartAndEndDateFromCsoEventId
+ *
+ * Pass in eventId and return start and end date by checking
+ *
+ * @param eventId
+ */
+export const getParamsFromCsoEventId = (eventId: string): CsoParams => {
+  const eventParams = eventId.split('-');
+
+  if (eventParams.length !== 5)
+    throw Error(
+      `Invalid eventId provided: ${eventId}. Expected format [provider]-[strategyId]-[period]-[startDate]-[endDate]`,
+    );
+
+  const [provider, strategyId, period, startDateStr, endDateStr] = eventParams;
+
+  if (!STR_DATE_REGEX.test(startDateStr) || !STR_DATE_REGEX.test(endDateStr))
+    throw new Error(
+      `Invalid start or end date provided. Start Date: ${startDateStr}. End Date: ${endDateStr}`,
+    );
+
+  const startDate = extractCsoEventIdDateFromStr(startDateStr);
+  const endDate = extractCsoEventIdDateFromStr(endDateStr);
+
+  return {
+    provider,
+    strategyId,
+    period,
+    startDate,
+    endDate,
+  };
+};
+
+export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
+  const [, day, month, year] = dateStr.match(STR_DATE_REGEX);
+
+  const date = new Date(`${month}-${day}-${year} 12:00:00 GMT`);
+
+  const csoEvent = getCsoEvent(date);
+  const {
+    previousDlcExpiry,
+    tradingOpen,
+    halfMonthEntryClosed,
+    tradingOpenHalfMonth,
+    upcomingDlcExpiry,
+  } = getCsoEventDates(date);
+
+  if (csoEvent === 'tradingOpen') {
+    if (date.getUTCDate() === tradingOpen.getUTCDate()) return tradingOpen;
+  } else if (csoEvent === 'tradingOpenHalfMonth') {
+    if (date.getUTCDate() === halfMonthEntryClosed.getUTCDate()) {
+      return tradingOpenHalfMonth;
+    }
+  } else if (csoEvent === 'dlcExpiry') {
+    if (date.getUTCDate() === upcomingDlcExpiry.getUTCDate()) {
+      return upcomingDlcExpiry;
+    } else if (date.getUTCDate() === previousDlcExpiry.getUTCDate()) {
+      return previousDlcExpiry;
+    }
+  } else {
+    throw Error(
+      `eventId dateStr invalid and likely on rollover weekend. CsoEvent: ${csoEvent}`,
+    );
+  }
+  return date;
+};
+
 export interface StartEndDates {
   startDate: Date;
   endDate: Date;
+}
+
+export interface CsoParams {
+  provider: string;
+  strategyId: string;
+  period: string;
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface DateParams {
+  day: string;
+  month: string;
+  year: string;
 }
 
 export interface CsoEventDates {
