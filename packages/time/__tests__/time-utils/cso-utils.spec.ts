@@ -4,12 +4,14 @@ import sinonChai from 'sinon-chai';
 
 import { MONTH_NAMES } from '../../lib';
 import {
+  extractCsoEventIdDateFromStr,
   getCsoEvent,
   getCsoEventDates,
   getCsoEventId,
   getCurrentCycleMaturityDate,
   getLastFridayInMonth,
   getNextCycleMaturityDate,
+  getParamsFromCsoEventId,
   getPreviousCycleMaturityDate,
 } from '../../lib/cso';
 
@@ -349,6 +351,140 @@ describe('CSO utilities', () => {
           );
         });
       }
+    });
+
+    describe('getParamsFromCsoEventId', () => {
+      for (let i = 0; i < 2; i++) {
+        const period = i === 0 ? 'mid-year' : 'end-of-year';
+
+        const {
+          atMaturity,
+          rightAfter,
+          oneWeekAfter,
+          oneWeekBeforeNext,
+          nextMaturity,
+        } = i === 0 ? midYearDates : endYearDates;
+
+        it(`should correctly calculate CSO Event ID ${period}`, () => {
+          const csoEventDetails = [
+            'atomic',
+            'call_spread_v1',
+            'monthly',
+          ] as const;
+
+          const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
+            getCsoEventDates(atMaturity);
+          const {
+            tradingOpen: nextTradingOpen,
+            upcomingDlcExpiry: nextDlcExpiry,
+          } = getCsoEventDates(nextMaturity);
+
+          const rightAfterCsoEventId = getCsoEventId(
+            rightAfter,
+            ...csoEventDetails,
+          );
+          const oneWeekAfterCsoEventId = getCsoEventId(
+            oneWeekAfter,
+            ...csoEventDetails,
+          );
+          const oneWeekBeforeNextCsoEventId = getCsoEventId(
+            oneWeekBeforeNext,
+            ...csoEventDetails,
+          );
+          const otherCsoEventId = `${csoEventDetails.join('-')}-${getStrDate(
+            oneWeekAfter,
+          )}-${getStrDate(oneWeekBeforeNext)}`;
+
+          const { startDate: startDateFirstMonth, endDate: endDateFirstMonth } =
+            getParamsFromCsoEventId(rightAfterCsoEventId);
+          const { startDate: startDateHalfMonth, endDate: endDateHalfMonth } =
+            getParamsFromCsoEventId(oneWeekAfterCsoEventId);
+          const {
+            startDate: startDateSecondMonth,
+            endDate: endDateSecondMonth,
+          } = getParamsFromCsoEventId(oneWeekBeforeNextCsoEventId);
+
+          const { startDate: otherStartDate, endDate: otherEndDate } =
+            getParamsFromCsoEventId(otherCsoEventId);
+
+          // atomic-call_spread_v1-monthly-27JUN22-29JUL22
+          expect(startDateFirstMonth.getTime()).to.equal(tradingOpen.getTime());
+          expect(endDateFirstMonth.getTime()).to.equal(
+            upcomingDlcExpiry.getTime(),
+          );
+
+          // atomic-call_spread_v1-monthly-15JUL22-29JUL22
+          expect(startDateHalfMonth.getTime()).to.equal(
+            tradingOpenHalfMonth.getTime(),
+          );
+          expect(endDateHalfMonth.getTime()).to.equal(
+            upcomingDlcExpiry.getTime(),
+          );
+
+          // atomic-call_spread_v1-monthly-1AUG22-26AUG22
+          expect(startDateSecondMonth.getTime()).to.equal(
+            nextTradingOpen.getTime(),
+          );
+          expect(endDateSecondMonth.getTime()).to.equal(
+            nextDlcExpiry.getTime(),
+          );
+
+          /**
+           * atomic-call_spread_v1-monthly-1JUL22-22JUL22
+           * non standard event ID
+           * (start and end date aren't tradingOpen,
+           *  tradingHalfMonthOpen, or dlcExpiry)
+           */
+          expect(oneWeekAfter.getUTCDate()).to.equal(
+            otherStartDate.getUTCDate(),
+          );
+          expect(oneWeekBeforeNext.getUTCDate()).to.equal(
+            otherEndDate.getUTCDate(),
+          );
+        });
+      }
+
+      it('should throw if format incorrect', () => {
+        const invalidEventId =
+          'invalid-atomic-call_spread_v1-monthly-27JUN22-29JUL22';
+
+        expect(() => getParamsFromCsoEventId(invalidEventId)).to.throw(
+          Error,
+          `Invalid eventId provided: ${invalidEventId}. Expected format [provider]-[strategyId]-[period]-[startDate]-[endDate]`,
+        );
+      });
+
+      it('should throw if date format incorrect', () => {
+        const invalidStartDate = '27INVALID';
+        const endDate = '29JUL22';
+
+        const invalidEventId = `atomic-call_spread_v1-monthly-${invalidStartDate}-${endDate}`;
+
+        expect(() => getParamsFromCsoEventId(invalidEventId)).to.throw(
+          Error,
+          `Invalid start or end date provided. Start Date: ${invalidStartDate}. End Date: ${endDate}`,
+        );
+      });
+    });
+
+    describe('extractCsoEventIdDateFromStr', () => {
+      // These dates were previously resulting in incorrect current or previous dlc expiry
+
+      it('should extract correct date for trading open', () => {
+        const dateStr = '30JAN23';
+        const date = extractCsoEventIdDateFromStr(dateStr);
+        const { tradingOpen } = getCsoEventDates(date);
+
+        expect(date.getTime()).to.equal(tradingOpen.getTime());
+      });
+
+      it('should extract correct date for dlc expiry', () => {
+        const dateStr = '24FEB23';
+        const date = extractCsoEventIdDateFromStr(dateStr);
+        const { previousDlcExpiry } = getCsoEventDates(date);
+
+        expect(date.getTime()).to.equal(previousDlcExpiry.getTime());
+      });
     });
   });
 });
