@@ -1,2 +1,2 @@
-export * from './oracle/client';
-export * from './strategy/client';
+export * from './oracleClient';
+export * from './strategyClient';
