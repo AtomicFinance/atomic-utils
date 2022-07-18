@@ -12,27 +12,6 @@ import { IOptions } from './options';
 
 const API_PREFIX = 'api/v1';
 
-export interface Nonce {
-  nonce: string;
-}
-
-export interface Announcement {
-  announcementId: string;
-  eventId: string;
-  offerId: string;
-  announcement: string;
-  attestation?: string;
-  cso: boolean;
-  startDate: number;
-  endDate: number;
-  nonces: Nonce[];
-  quantity?: number;
-}
-
-export interface AnnouncementResponse {
-  announcements: Announcement[];
-}
-
 /**
  * Oracle client
  */
@@ -117,8 +96,10 @@ export class BaseClient {
     } else if (error.response) {
       if (typeof error.response.data === 'string') {
         throw new Error(error.response.data);
-      } else {
+      } else if (typeof (error.response.data as any).error === 'string') {
         throw new Error((error.response.data as any).error as string);
+      } else {
+        throw new Error(JSON.stringify(error.response.data));
       }
     } else {
       throw new Error(error.message);
