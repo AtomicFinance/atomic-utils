@@ -18,7 +18,11 @@ describe('Oracle client', () => {
 
   const logger = new Logger('oracle');
   logger.transports.push(new ConsoleTransport(console));
-  const oracle = new OracleClient({ uri: '', logger, apiKey: '123' });
+  const oracle = new OracleClient({
+    uri: '',
+    logger,
+    apiKey: '123',
+  });
 
   describe('getAnnouncements', () => {
     it('should succeed returning all announcements', async () => {
@@ -32,15 +36,11 @@ describe('Oracle client', () => {
     });
 
     it('fail if service is down', async () => {
-      const loggerSpy = sinon.stub(logger, 'error');
-
       const oracleSpy = sinon.stub(oracle, 'axiosCall');
       oracleSpy.rejects(ORACLE.ECONNREFUSED);
 
-      await oracle.getAnnouncements();
-
-      expect(loggerSpy).to.be.calledOnceWith(
-        'Error: Could not connect to Oracle Service ',
+      await expect(oracle.getAnnouncements()).to.be.rejectedWith(
+        'Could not connect to Service',
       );
     });
 
@@ -126,7 +126,6 @@ describe('Oracle client', () => {
     it('should fail incorrect API Key', async () => {
       const unauthorizedErrorMessage =
         'Unauthorized: Incorrect API Key. IP ::ffff:127.0.0.1';
-      const loggerSpy = sinon.stub(logger, 'error');
       const oracleSpy = sinon.stub(oracle, 'axiosCall');
       oracleSpy.rejects(ORACLE.INCORRECT_API_KEY);
 
@@ -136,7 +135,6 @@ describe('Oracle client', () => {
           ORACLE.ANNOUNCEMENT_QUANTITY_RESPONSE.quantity,
         ),
       ).to.be.rejectedWith(unauthorizedErrorMessage);
-      expect(loggerSpy).to.be.calledOnceWith(unauthorizedErrorMessage);
     });
 
     it('should fail if API Key not provided', async () => {
@@ -148,6 +146,16 @@ describe('Oracle client', () => {
           ORACLE.ANNOUNCEMENT_QUANTITY_RESPONSE.quantity,
         ),
       ).to.be.rejectedWith('API Key required for postAnnouncementQuantity');
+    });
+  });
+
+  describe('react native', () => {
+    it('should fail if incorrect base url', async () => {
+      const oracleSpy = sinon.stub(oracle, 'axiosCall');
+      oracleSpy.rejects(ORACLE.REACT_NATIVE_INCORRECT_BASE_URL_ERROR);
+      await expect(oracle.getAnnouncements()).to.be.rejectedWith(
+        'Invalid endpoint: GET /api/announcements/api/v1/announcements',
+      );
     });
   });
 });

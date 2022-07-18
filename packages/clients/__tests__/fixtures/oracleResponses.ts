@@ -137,10 +137,44 @@ const ANNOUNCEMENT_QUANTITY_RESPONSE = {
   quantity: 1e8,
 };
 
+const REACT_NATIVE_INCORRECT_BASE_URL_ERROR = {
+  message: 'Request failed with status code 404',
+  name: 'AxiosError',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+    },
+    transformRequest: [null],
+    transformResponse: [null],
+    timeout: 20000,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: null },
+    headers: { Accept: 'application/json, text/plain, */*' },
+    baseURL: 'http://127.0.0.1:8575/api/announcements/api/v1/',
+    url: '/announcements',
+    method: 'get',
+    params: {},
+    responseType: 'json',
+  },
+  code: 'ERR_BAD_REQUEST',
+  status: 404,
+  response: {
+    data: {
+      error: 'Invalid endpoint: GET /api/announcements/api/v1/announcements',
+    },
+  },
+};
+
 export default {
   ANNOUNCEMENT_RESPONSE,
   ANNOUNCEMENTS_RESPONSE,
   ANNOUNCEMENT_QUANTITY_RESPONSE,
   ECONNREFUSED,
   INCORRECT_API_KEY,
+  REACT_NATIVE_INCORRECT_BASE_URL_ERROR,
 };

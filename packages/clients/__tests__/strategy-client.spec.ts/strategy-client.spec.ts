@@ -33,15 +33,11 @@ describe('Strategy client', () => {
     });
 
     it('fail if service is down', async () => {
-      const loggerSpy = sinon.stub(logger, 'error');
+      const oracleSpy = sinon.stub(strategyClient, 'axiosCall');
+      oracleSpy.rejects(STRATEGY.ECONNREFUSED);
 
-      const strategySpy = sinon.stub(strategyClient, 'axiosCall');
-      strategySpy.rejects(STRATEGY.ECONNREFUSED);
-
-      await strategyClient.getStrategy(strategyName);
-
-      expect(loggerSpy).to.be.calledOnceWith(
-        'Error: Could not connect to Strategy Service ',
+      await expect(strategyClient.getStrategy(strategyName)).to.be.rejectedWith(
+        'Could not connect to Service',
       );
     });
   });
