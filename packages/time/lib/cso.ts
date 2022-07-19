@@ -308,6 +308,8 @@ export const getParamsFromCsoEventId = (eventId: string): CsoParams => {
 export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
   const [, day, month, year] = dateStr.match(STR_DATE_REGEX);
 
+  // Set date to 12 PM UTC since it is between DLC Expiry and DLC Attestation
+  // and also after Trading Open and Trading Open Half Month
   const date = new Date(`${month}-${day}-${year} 12:00:00 GMT`);
 
   const csoEvent = getCsoEvent(date);
@@ -323,9 +325,8 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
   if (csoEvent === 'tradingOpen') {
     if (date.getUTCDate() === tradingOpen.getUTCDate()) return newEntryClosed;
   } else if (csoEvent === 'tradingOpenHalfMonth') {
-    if (date.getUTCDate() === halfMonthEntryClosed.getUTCDate()) {
-      return tradingOpenHalfMonth;
-    }
+    if (date.getUTCDate() === tradingOpenHalfMonth.getUTCDate())
+      return halfMonthEntryClosed;
   } else if (csoEvent === 'dlcExpiry') {
     if (date.getUTCDate() === upcomingDlcExpiry.getUTCDate()) {
       return upcomingDlcExpiry;

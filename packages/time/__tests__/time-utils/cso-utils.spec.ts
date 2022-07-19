@@ -375,6 +375,7 @@ describe('CSO utilities', () => {
           const {
             newEntryClosed,
             tradingOpen,
+            halfMonthEntryClosed,
             tradingOpenHalfMonth,
             upcomingDlcExpiry,
           } = getCsoEventDates(atMaturity);
@@ -431,7 +432,7 @@ describe('CSO utilities', () => {
 
           // atomic-call_spread_v1-monthly-15JUL22-29JUL22
           expect(startDateHalfMonth.getTime()).to.equal(
-            tradingOpenHalfMonth.getTime(),
+            halfMonthEntryClosed.getTime(),
           );
           expect(endDateHalfMonth.getTime()).to.equal(
             upcomingDlcExpiry.getTime(),
