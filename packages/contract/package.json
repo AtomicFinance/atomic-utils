@@ -1,6 +1,6 @@
 {
   "name": "@atomic-utils/contract",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Atomic Utils Contract",
   "scripts": {
     "test": "../../node_modules/.bin/nyc --reporter=lcov --reporter=text --extension=.ts ../../node_modules/.bin/mocha --require ts-node/register --recursive \"__tests__/**/*.spec.*\"",
@@ -23,7 +23,7 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@atomic-utils/format": "^0.1.16",
+    "@atomic-utils/format": "^0.1.17",
     "@node-dlc/core": "^0.19.2",
     "@node-dlc/logger": "^0.19.2",
     "@node-dlc/messaging": "^0.19.2",
