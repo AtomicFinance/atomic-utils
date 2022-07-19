@@ -16,8 +16,8 @@ export const DLC_ATTESTATION_LEN = 1;
 export const ROLLOVER_OPEN_LEN = 24;
 export const NEW_ENTRY_OPEN_LEN = 36;
 export const NEW_ENTRY_CLOSED_LEN = 8;
-export const HALF_MONTH_ENTRY_CLOSED_LEN = 8;
-export const TRADING_OPEN_HALF_MONTH_LEN = 332;
+export const HALF_MONTH_ENTRY_CLOSED_LEN = 6;
+export const TRADING_OPEN_HALF_MONTH_LEN = 334;
 
 import { getStrDate } from '@atomic-utils/deribit';
 

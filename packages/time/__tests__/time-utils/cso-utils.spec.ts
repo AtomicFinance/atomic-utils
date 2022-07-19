@@ -407,6 +407,15 @@ describe('CSO utilities', () => {
           const { startDate: otherStartDate, endDate: otherEndDate } =
             getParamsFromCsoEventId(otherCsoEventId);
 
+          // Check that trading open starts at 12 pm UTC
+          expect(tradingOpen.getUTCHours()).to.equal(12);
+
+          // Check that trading open half month starts at 10 am UTC
+          expect(tradingOpenHalfMonth.getUTCHours()).to.equal(10);
+
+          // Check that dlcExpiry starts is at 8 am UTC
+          expect(upcomingDlcExpiry.getUTCHours()).to.equal(8);
+
           // atomic-call_spread_v1-monthly-27JUN22-29JUL22
           expect(startDateFirstMonth.getTime()).to.equal(tradingOpen.getTime());
           expect(endDateFirstMonth.getTime()).to.equal(
