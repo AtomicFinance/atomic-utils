@@ -13,8 +13,8 @@ export interface StrategyResponse {
 }
 
 export interface StrategyTradesRequestOptions {
-  start_date?: number;
-  end_date?: number;
+  startDate?: number;
+  endDate?: number;
 }
 export interface StrategyTrade {
   id: number;
@@ -79,11 +79,11 @@ export class StrategyClient extends BaseClient {
    */
   public async getStrategyTrades(
     strategyName: string,
-    { start_date, end_date }: StrategyTradesRequestOptions = {},
+    { startDate, endDate }: StrategyTradesRequestOptions = {},
   ): Promise<StrategyTradesResponse> {
     return this.get(`/${strategyName}/trades`, {
-      start_date,
-      end_date,
+      start_date: startDate,
+      end_date: endDate,
     });
   }
 }

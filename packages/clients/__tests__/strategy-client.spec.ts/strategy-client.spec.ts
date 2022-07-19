@@ -72,7 +72,7 @@ describe('Strategy client', () => {
 
       const announcement = await strategyClient.getStrategyTrades(
         strategyName,
-        { start_date: 2000 },
+        { startDate: 2000 },
       );
 
       expect(announcement).to.deep.equal(
@@ -98,7 +98,7 @@ describe('Strategy client', () => {
 
       const announcement = await strategyClient.getStrategyTrades(
         strategyName,
-        { end_date: 2000 },
+        { endDate: 2000 },
       );
 
       expect(announcement).to.deep.equal(
