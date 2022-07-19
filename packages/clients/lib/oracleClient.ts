@@ -15,6 +15,7 @@ export interface Announcement {
   endDate: number;
   nonces: Nonce[];
   quantity?: number;
+  outcome?: string;
 }
 
 export interface AnnouncementResponse {
