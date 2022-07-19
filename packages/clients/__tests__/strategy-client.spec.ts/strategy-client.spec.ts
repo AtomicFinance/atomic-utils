@@ -55,8 +55,8 @@ describe('Strategy client', () => {
       expect(strategySpy).to.be.calledOnceWithExactly(
         `/${strategyName}/trades`,
         {
-          startDate: undefined,
-          endDate: undefined,
+          start_date: undefined,
+          end_date: undefined,
         },
       );
     });
@@ -65,14 +65,14 @@ describe('Strategy client', () => {
       const strategySpy = sinon
         .stub(strategyClient, 'get')
         .withArgs(`/${strategyName}/trades`, {
-          startDate: 2000,
-          endDate: undefined,
+          start_date: 2000,
+          end_date: undefined,
         })
         .returns(STRATEGY.STRATEGY_TRADES_FILTERED_START_RESPONSE);
 
       const announcement = await strategyClient.getStrategyTrades(
         strategyName,
-        { startDate: 2000 },
+        { start_date: 2000 },
       );
 
       expect(announcement).to.deep.equal(
@@ -81,8 +81,8 @@ describe('Strategy client', () => {
       expect(strategySpy).to.be.calledOnceWithExactly(
         `/${strategyName}/trades`,
         {
-          startDate: 2000,
-          endDate: undefined,
+          start_date: 2000,
+          end_date: undefined,
         },
       );
     });
@@ -91,14 +91,14 @@ describe('Strategy client', () => {
       const strategySpy = sinon
         .stub(strategyClient, 'get')
         .withArgs(`/${strategyName}/trades`, {
-          startDate: undefined,
-          endDate: 2000,
+          start_date: undefined,
+          end_date: 2000,
         })
         .returns(STRATEGY.STRATEGY_TRADES_FILTERED_END_RESPONSE);
 
       const announcement = await strategyClient.getStrategyTrades(
         strategyName,
-        { endDate: 2000 },
+        { end_date: 2000 },
       );
 
       expect(announcement).to.deep.equal(
@@ -107,8 +107,8 @@ describe('Strategy client', () => {
       expect(strategySpy).to.be.calledOnceWithExactly(
         `/${strategyName}/trades`,
         {
-          startDate: undefined,
-          endDate: 2000,
+          start_date: undefined,
+          end_date: 2000,
         },
       );
     });
