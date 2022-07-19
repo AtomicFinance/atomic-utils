@@ -372,9 +372,14 @@ describe('CSO utilities', () => {
             'monthly',
           ] as const;
 
-          const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
-            getCsoEventDates(atMaturity);
           const {
+            newEntryClosed,
+            tradingOpen,
+            tradingOpenHalfMonth,
+            upcomingDlcExpiry,
+          } = getCsoEventDates(atMaturity);
+          const {
+            newEntryClosed: nextNewEntryClosed,
             tradingOpen: nextTradingOpen,
             upcomingDlcExpiry: nextDlcExpiry,
           } = getCsoEventDates(nextMaturity);
@@ -417,7 +422,9 @@ describe('CSO utilities', () => {
           expect(upcomingDlcExpiry.getUTCHours()).to.equal(8);
 
           // atomic-call_spread_v1-monthly-27JUN22-29JUL22
-          expect(startDateFirstMonth.getTime()).to.equal(tradingOpen.getTime());
+          expect(startDateFirstMonth.getTime()).to.equal(
+            newEntryClosed.getTime(),
+          );
           expect(endDateFirstMonth.getTime()).to.equal(
             upcomingDlcExpiry.getTime(),
           );
@@ -432,7 +439,7 @@ describe('CSO utilities', () => {
 
           // atomic-call_spread_v1-monthly-1AUG22-26AUG22
           expect(startDateSecondMonth.getTime()).to.equal(
-            nextTradingOpen.getTime(),
+            nextNewEntryClosed.getTime(),
           );
           expect(endDateSecondMonth.getTime()).to.equal(
             nextDlcExpiry.getTime(),
@@ -482,9 +489,9 @@ describe('CSO utilities', () => {
       it('should extract correct date for trading open', () => {
         const dateStr = '30JAN23';
         const date = extractCsoEventIdDateFromStr(dateStr);
-        const { tradingOpen } = getCsoEventDates(date);
+        const { newEntryClosed } = getCsoEventDates(date);
 
-        expect(date.getTime()).to.equal(tradingOpen.getTime());
+        expect(date.getTime()).to.equal(newEntryClosed.getTime());
       });
 
       it('should extract correct date for dlc expiry', () => {
