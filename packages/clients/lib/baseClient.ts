@@ -93,13 +93,30 @@ export class BaseClient {
       throw Error(`Could not connect to Service ${this.opts.uri}`);
     } else if (error.code === 'EPIPE') {
       throw Error(`EPIPE error ${this.opts.uri}`);
-    } else if (error.response) {
-      if (typeof error.response.data === 'string') {
-        throw new Error(error.response.data);
-      } else if (typeof (error.response.data as any).error === 'string') {
-        throw new Error((error.response.data as any).error as string);
+    } else if (error.code === 'ERR_NETWORK') {
+      if (error.config) {
+        const { method, baseURL, url, params } = error.config;
+        throw Error(
+          `Network Error ${method} ${baseURL}${url} with params ${JSON.stringify(
+            params,
+          )}`,
+        );
       } else {
-        throw new Error(JSON.stringify(error.response.data));
+        throw new Error(
+          `Network Error ${this.opts.uri} ${JSON.stringify(error)}`,
+        );
+      }
+    } else if (error.response) {
+      if (error.response.data) {
+        if (typeof error.response.data === 'string') {
+          throw new Error(error.response.data);
+        } else if (typeof (error.response.data as any).error === 'string') {
+          throw new Error((error.response.data as any).error as string);
+        } else {
+          throw new Error(JSON.stringify(error.response.data));
+        }
+      } else {
+        throw new Error(JSON.stringify(error.response));
       }
     } else {
       throw new Error(error.message);
