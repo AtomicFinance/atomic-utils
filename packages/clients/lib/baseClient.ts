@@ -124,6 +124,6 @@ export class BaseClient {
   };
 }
 
-interface IParams {
+export interface IParams {
   [x: string]: unknown;
 }
