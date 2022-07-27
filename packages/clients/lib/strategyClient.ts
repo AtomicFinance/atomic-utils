@@ -44,6 +44,21 @@ export interface StrategyStateResponse {
   strategy_data: string;
 }
 
+export interface ConsolidatedTrade {
+  offer_id: string;
+  symbol: string;
+  asset: string;
+  pnl: number;
+  enter_timestamp: number;
+  exit_timestamp: number | null;
+  quantity: number;
+  tag: string;
+}
+
+export interface GroupedTrades {
+  [key: string]: StrategyTrade[];
+}
+
 /**
  * Strategy service client
  */
@@ -87,3 +102,53 @@ export class StrategyClient extends BaseClient {
     });
   }
 }
+
+export const groupTradesBySymbol = (trades: StrategyTrade[]): GroupedTrades => {
+  const groupBySymbol = trades.reduce((group, product) => {
+    const { symbol } = product;
+    group[symbol] = group[symbol] ?? [];
+    group[symbol].push(product);
+    return group;
+  }, {});
+
+  return groupBySymbol;
+};
+
+export const consolidatedTradesBySymbol = (
+  groupedTrades: GroupedTrades,
+): ConsolidatedTrade[] => {
+  return Object.keys(groupedTrades).flatMap((symbol) => {
+    const trades = groupedTrades[symbol];
+
+    if (trades.length > 2 || trades.length <= 0) {
+      return []; // skip
+    }
+
+    trades.sort((a, b) => {
+      return a.timestamp - b.timestamp;
+    });
+
+    let pnl = 0;
+
+    trades.forEach((trade) => {
+      if (trade.direction === 'sell') {
+        pnl += trade.price;
+      } else if (trade.direction === 'buy') {
+        pnl -= trade.price;
+      } else {
+        return []; // skip
+      }
+    });
+
+    return {
+      offer_id: trades[0].offer_id,
+      symbol: trades[0].symbol,
+      asset: trades[0].asset,
+      pnl,
+      enter_timestamp: trades[0].timestamp,
+      exit_timestamp: trades[1] ? trades[1].timestamp : null,
+      quantity: trades[0].quantity,
+      tag: '',
+    };
+  });
+};
