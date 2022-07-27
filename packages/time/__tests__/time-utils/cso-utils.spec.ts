@@ -5,6 +5,8 @@ import sinonChai from 'sinon-chai';
 import { MONTH_NAMES } from '../../lib';
 import {
   extractCsoEventIdDateFromStr,
+  findCycleMaturityMonthsInPast,
+  findNumCyclesInPastMaturityExists,
   getCsoEvent,
   getCsoEventDates,
   getCsoEventId,
@@ -18,23 +20,23 @@ import {
 chai.use(sinonChai);
 
 describe('CSO utilities', () => {
-  describe('getLastFridayInMonth', () => {
-    // month is 0-indexed
-    const lastFridays = [
-      new Date(Date.UTC(2022, 0, 28, 8, 0, 0, 0)), // Jan
-      new Date(Date.UTC(2022, 1, 25, 8, 0, 0, 0)), // Feb
-      new Date(Date.UTC(2022, 2, 25, 8, 0, 0, 0)), // Mar
-      new Date(Date.UTC(2022, 3, 29, 8, 0, 0, 0)), // Apr
-      new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0)), // May
-      new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // Jun
-      new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0)), // Jul
-      new Date(Date.UTC(2022, 7, 26, 8, 0, 0, 0)), // Aug
-      new Date(Date.UTC(2022, 8, 30, 8, 0, 0, 0)), // Sep
-      new Date(Date.UTC(2022, 9, 28, 8, 0, 0, 0)), // Oct
-      new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0)), // Nov
-      new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // Dec
-    ];
+  // month is 0-indexed
+  const lastFridays = [
+    new Date(Date.UTC(2022, 0, 28, 8, 0, 0, 0)), // Jan
+    new Date(Date.UTC(2022, 1, 25, 8, 0, 0, 0)), // Feb
+    new Date(Date.UTC(2022, 2, 25, 8, 0, 0, 0)), // Mar
+    new Date(Date.UTC(2022, 3, 29, 8, 0, 0, 0)), // Apr
+    new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0)), // May
+    new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // Jun
+    new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0)), // Jul
+    new Date(Date.UTC(2022, 7, 26, 8, 0, 0, 0)), // Aug
+    new Date(Date.UTC(2022, 8, 30, 8, 0, 0, 0)), // Sep
+    new Date(Date.UTC(2022, 9, 28, 8, 0, 0, 0)), // Oct
+    new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0)), // Nov
+    new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // Dec
+  ];
 
+  describe('getLastFridayInMonth', () => {
     const year = 2022;
 
     for (let month = 0; month < 12; month++) {
@@ -501,6 +503,108 @@ describe('CSO utilities', () => {
         const { previousDlcExpiry } = getCsoEventDates(date);
 
         expect(date.getTime()).to.equal(previousDlcExpiry.getTime());
+      });
+    });
+
+    describe('findCycleMaturityMonthsInPast', () => {
+      it('should find cycle maturity 1 month in the past', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+        const expectedMaturity = lastFridays[lastFridays.length - 2];
+
+        const actualMaturity = findCycleMaturityMonthsInPast(
+          currentMaturity,
+          1,
+        );
+
+        expect(actualMaturity.getTime()).to.equal(expectedMaturity.getTime());
+      });
+
+      it('should find cycle maturity 3 months in the past', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+        const expectedMaturity = lastFridays[lastFridays.length - 4];
+
+        const actualMaturity = findCycleMaturityMonthsInPast(
+          currentMaturity,
+          3,
+        );
+
+        expect(actualMaturity.getTime()).to.equal(expectedMaturity.getTime());
+      });
+
+      it('should fail if numMonths provided is 0', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+
+        expect(() =>
+          findCycleMaturityMonthsInPast(currentMaturity, 0),
+        ).to.throw(Error, 'numMonths must be at least 1');
+      });
+    });
+
+    describe('findNumCyclesInPastMaturityExists', () => {
+      it('should succeed if previous expiry provided is exactly expiry', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+        const previousMaturity = lastFridays[lastFridays.length - 2];
+
+        const actualNumCylesInPast = findNumCyclesInPastMaturityExists(
+          currentMaturity,
+          previousMaturity,
+        );
+        const expectedNumCyclesInPast = 1;
+
+        expect(actualNumCylesInPast).to.equal(expectedNumCyclesInPast);
+      });
+
+      it('should succeed if previous expiry provided is slightly after expiry', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+        const previousMaturity = lastFridays[lastFridays.length - 2];
+
+        const actualNumCylesInPast = findNumCyclesInPastMaturityExists(
+          currentMaturity,
+          new Date(previousMaturity.getTime() + 1000),
+        );
+        const expectedNumCyclesInPast = 1;
+
+        expect(actualNumCylesInPast).to.equal(expectedNumCyclesInPast);
+      });
+
+      it('should fail if current date provided is outside dlcExpiry', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+        const previousMaturity = lastFridays[lastFridays.length - 2];
+
+        expect(() =>
+          findNumCyclesInPastMaturityExists(
+            currentMaturity,
+            new Date(previousMaturity.getTime() - 1),
+          ),
+        ).to.throw(Error, 'Previous Expiry should be in time period dlcExpiry');
+      });
+
+      it('should fail if previousExpiry greater than current date provided', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+
+        expect(() =>
+          findNumCyclesInPastMaturityExists(
+            currentMaturity,
+            new Date(currentMaturity.getTime() + 1),
+          ),
+        ).to.throw(Error, 'Previous Expiry should be less than current date');
+      });
+
+      it('should fail if maxTries exceeded', () => {
+        const currentMaturity = lastFridays[lastFridays.length - 1];
+        const previousMaturity = lastFridays[lastFridays.length - 4];
+        const maxTries = 1;
+
+        expect(() =>
+          findNumCyclesInPastMaturityExists(
+            currentMaturity,
+            previousMaturity,
+            maxTries,
+          ),
+        ).to.throw(
+          Error,
+          'Could not find cycle maturity in the past after checking 1 months',
+        );
       });
     });
   });

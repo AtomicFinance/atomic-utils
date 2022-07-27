@@ -343,6 +343,62 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
   return date;
 };
 
+/**
+ * findCycleMaturityMonthsInPast
+ *
+ * @param {Date} t_ current time
+ * @param {number} numMonths number of months to go back
+ * @returns {Date}
+ */
+export const findCycleMaturityMonthsInPast = (
+  t_: Date,
+  numMonths: number,
+): Date => {
+  let t = new Date(t_.getTime());
+
+  if (numMonths === 0) throw Error('numMonths must be at least 1');
+
+  for (let i = 0; i < numMonths; i++) {
+    t = getPreviousCycleMaturityDate(new Date(t.getTime() - 1));
+  }
+
+  return t;
+};
+
+/**
+ * findNumCyclesInPastMaturityExists
+ *
+ * @param {Date} t_ current time
+ * @param {Date} previousExpiry previous cycle expiry
+ * @returns {number}
+ */
+export const findNumCyclesInPastMaturityExists = (
+  t_: Date,
+  previousExpiry_: Date,
+  maxTries = 1000,
+): number => {
+  let t = new Date(t_.getTime());
+
+  if (previousExpiry_.getTime() >= t.getTime())
+    throw Error('Previous Expiry should be less than current date');
+  if (getCsoEvent(previousExpiry_) !== 'dlcExpiry')
+    throw Error('Previous Expiry should be in time period dlcExpiry');
+
+  const { previousDlcExpiry } = getCsoEventDates(previousExpiry_);
+  const previousExpiry = previousDlcExpiry;
+
+  if (t.getTime() === previousExpiry.getTime()) return 0;
+
+  for (let i = 0; i < maxTries; i++) {
+    t = getPreviousCycleMaturityDate(new Date(t.getTime() - 1));
+    if (t.getTime() === previousExpiry.getTime()) return i + 1;
+  }
+
+  throw Error(
+    `Could not find cycle maturity in the past after checking ${maxTries} months`,
+  );
+};
+
 export interface StartEndDates {
   startDate: Date;
   endDate: Date;
