@@ -33,7 +33,7 @@ export class OracleClient extends BaseClient {
    *
    * @returns
    */
-  public async getAnnouncements(
+  public getAnnouncements(
     offerId?: string,
     startDate?: number,
     endDate?: number,
@@ -58,10 +58,28 @@ export class OracleClient extends BaseClient {
    *                         https://github.com/discreetlogcontracts/dlcspecs/blob/master/Messaging.md#oracle_event
    * @returns {Announcement}
    */
-  public async getAnnouncementByEventId(
-    eventId: string,
-  ): Promise<Announcement> {
+  public getAnnouncementByEventId(eventId: string): Promise<Announcement> {
     return this.get(`/announcements/${eventId}`);
+  }
+
+  /**
+   * getAnnouncementByAnnouncementId
+   *
+   * Get Announcement By Annoucement ID
+   *
+   * @param {string} announcementId the announcementId for the DLC OracleAnnouncement
+   *                         https://github.com/discreetlogcontracts/dlcspecs/blob/master/Messaging.md#oracle_event
+   * @returns {Announcement}
+   */
+  public async getAnnouncementByAnnouncementId(
+    announcementId: string,
+  ): Promise<Announcement> {
+    const response = await this.get(`/announcements/`, { announcementId });
+    if (response.announcements.length === 0) {
+      throw Error(`Announcement ${announcementId} not found`);
+    }
+
+    return response.announcements[0];
   }
 
   /**
@@ -76,7 +94,7 @@ export class OracleClient extends BaseClient {
    * @param {number} quantity the quantity entered in SATS
    * @returns {Announcement} return modified announcement
    */
-  public async postAnnouncementQuantity(
+  public postAnnouncementQuantity(
     eventId: string,
     quantity: number,
   ): Promise<Announcement> {
