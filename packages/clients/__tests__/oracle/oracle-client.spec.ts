@@ -104,6 +104,19 @@ describe('Oracle client', () => {
     });
   });
 
+  describe('getAnnouncementByAnnouncementId', () => {
+    it('should succeed returning announcement', async () => {
+      const oracleSpy = sinon.stub(oracle);
+      oracleSpy.getAnnouncementByAnnouncementId.resolves(
+        ORACLE.ANNOUNCEMENT_RESPONSE,
+      );
+      const announcement = await oracle.getAnnouncementByAnnouncementId(
+        ORACLE.ANNOUNCEMENT_RESPONSE.announcementId,
+      );
+      expect(announcement).to.deep.equal(ORACLE.ANNOUNCEMENT_RESPONSE);
+    });
+  });
+
   describe('postAnnouncementQuantity', () => {
     it('should post quantity and return announcement with quantity', async () => {
       const oracleSpy = sinon.stub(oracle, 'post');
@@ -140,12 +153,12 @@ describe('Oracle client', () => {
     it('should fail if API Key not provided', async () => {
       const oracle = new OracleClient({ uri: '', logger });
 
-      await expect(
+      expect(() =>
         oracle.postAnnouncementQuantity(
           ORACLE.ANNOUNCEMENT_RESPONSE.eventId,
           ORACLE.ANNOUNCEMENT_QUANTITY_RESPONSE.quantity,
         ),
-      ).to.be.rejectedWith('API Key required for postAnnouncementQuantity');
+      ).to.throw('API Key required for postAnnouncementQuantity');
     });
   });
 

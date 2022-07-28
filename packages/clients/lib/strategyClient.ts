@@ -55,7 +55,7 @@ export class StrategyClient extends BaseClient {
    * @param strategyName The name of the strategy
    * @returns {Promise<StrategyResponse>}
    */
-  public async getStrategy(strategyName: string): Promise<StrategyResponse> {
+  public getStrategy(strategyName: string): Promise<StrategyResponse> {
     return this.get(`/${strategyName}`);
   }
 
@@ -65,7 +65,7 @@ export class StrategyClient extends BaseClient {
    * @param strategyName The name of the strategy
    * @returns {Promise<StrategyStateResponse>}
    */
-  public async getStrategyState(
+  public getStrategyState(
     strategyName: string,
   ): Promise<StrategyStateResponse> {
     return this.get(`/${strategyName}/state`);
@@ -78,7 +78,7 @@ export class StrategyClient extends BaseClient {
    * @param options Optional filters for start/end date
    * @returns {Promise<StrategyTradesResponse>}
    */
-  public async getStrategyTrades(
+  public getStrategyTrades(
     strategyName: string,
     { startDate, endDate }: StrategyTradesRequestOptions = {},
   ): Promise<StrategyTradesResponse> {
