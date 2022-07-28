@@ -346,6 +346,9 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
 /**
  * findCycleMaturityMonthsInPast
  *
+ * Enter number of cycles to look in past and get cycle maturity
+ * i.e. passing in numMonths 3 will get the cycle maturity 3 months ago
+ *
  * @param {Date} t_ current time
  * @param {number} numMonths number of months to go back
  * @returns {Date}
@@ -367,6 +370,8 @@ export const findCycleMaturityMonthsInPast = (
 
 /**
  * findNumCyclesInPastMaturityExists
+ *
+ * Enter previousExpiry and find out how many months ago this expiry was
  *
  * @param {Date} t_ current time
  * @param {Date} previousExpiry previous cycle expiry
