@@ -121,6 +121,7 @@ const STRATEGY_TRADES_FILTERED_END_RESPONSE: StrategyTradesResponse = [
 const STRATEGY_STATE_RESPONSE: StrategyStateResponse = {
   id: 2,
   offer_id: 'ribbon',
+  apy_all: 16,
   apy_2y: 15,
   apy_1y: 11,
   apy_6m: 9,

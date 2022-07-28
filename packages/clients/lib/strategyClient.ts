@@ -34,6 +34,7 @@ export type StrategyTradesResponse = StrategyTrade[];
 export interface StrategyStateResponse {
   id: number;
   offer_id: string;
+  apy_all: number;
   apy_2y: number;
   apy_1y: number;
   apy_6m: number;
