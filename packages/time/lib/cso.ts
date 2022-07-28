@@ -319,7 +319,6 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
     previousDlcExpiry,
     newEntryClosed,
     tradingOpen,
-    halfMonthEntryClosed,
     tradingOpenHalfMonth,
     upcomingDlcExpiry,
   } = getCsoEventDates(date);
@@ -328,7 +327,7 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
     if (date.getUTCDate() === tradingOpen.getUTCDate()) return newEntryClosed;
   } else if (csoEvent === 'tradingOpenHalfMonth') {
     if (date.getUTCDate() === tradingOpenHalfMonth.getUTCDate())
-      return halfMonthEntryClosed;
+      return tradingOpenHalfMonth;
   } else if (csoEvent === 'dlcExpiry') {
     if (date.getUTCDate() === upcomingDlcExpiry.getUTCDate()) {
       return upcomingDlcExpiry;

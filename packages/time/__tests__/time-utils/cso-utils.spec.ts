@@ -434,7 +434,7 @@ describe('CSO utilities', () => {
 
           // atomic-call_spread_v1-monthly-15JUL22-29JUL22
           expect(startDateHalfMonth.getTime()).to.equal(
-            halfMonthEntryClosed.getTime(),
+            tradingOpenHalfMonth.getTime(),
           );
           expect(endDateHalfMonth.getTime()).to.equal(
             upcomingDlcExpiry.getTime(),
