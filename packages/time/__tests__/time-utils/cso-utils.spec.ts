@@ -131,6 +131,26 @@ describe('CSO utilities', () => {
           );
         });
       }
+
+      it('should fail if seconds provided', () => {
+        const timestampInSeconds = Math.floor(lastFridays[0].getTime() / 1000);
+        const t = new Date(timestampInSeconds);
+
+        expect(() => getCurrentCycleMaturityDate(t)).to.throw(
+          Error,
+          `Invalid date provided ${t} with timestamp ${t.getTime()}, you may have used seconds instead of milliseconds`,
+        );
+      });
+
+      it('should fail if microseconds provided', () => {
+        const timestampInMicroSeconds = lastFridays[0].getTime() * 1000;
+        const t = new Date(timestampInMicroSeconds);
+
+        expect(() => getCurrentCycleMaturityDate(t)).to.throw(
+          Error,
+          `Invalid date provided ${t} with timestamp ${t.getTime()}, you may have used microseconds instead of milliseconds`,
+        );
+      });
     });
 
     describe('getNextCycleMaturityDate', () => {

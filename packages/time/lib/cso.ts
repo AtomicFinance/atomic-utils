@@ -20,6 +20,7 @@ export const HALF_MONTH_ENTRY_CLOSED_LEN = 6;
 export const TRADING_OPEN_HALF_MONTH_LEN = 334;
 
 import { getStrDate } from '@atomic-utils/deribit';
+import assert from 'assert';
 
 export const STR_DATE_REGEX = /(\d{1,2})([A-Z]+)(\d{1,2})/;
 
@@ -53,6 +54,15 @@ export const getCurrentCycleMaturityDate = (t_: Date): Date => {
   const t = new Date(t_.getTime()); // clone to avoid mutation
 
   let y = t.getUTCFullYear();
+  assert(
+    y >= 2009,
+    `Invalid date provided ${t} with timestamp ${t.getTime()}, you may have used seconds instead of milliseconds`,
+  );
+  assert(
+    y <= 2100,
+    `Invalid date provided ${t} with timestamp ${t.getTime()}, you may have used microseconds instead of milliseconds`,
+  );
+
   let m = t.getUTCMonth() + 1;
   let lastFriday = getLastFridayInMonth(y, m);
 
