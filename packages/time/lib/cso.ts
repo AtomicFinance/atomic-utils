@@ -55,11 +55,11 @@ export const getCurrentCycleMaturityDate = (t_: Date): Date => {
 
   let y = t.getUTCFullYear();
   assert(
-    y >= 2009,
+    y >= 2009, // since cycle maturity cannot be before Bitcoin was created
     `Invalid date provided ${t} with timestamp ${t.getTime()}, you may have used seconds instead of milliseconds`,
   );
   assert(
-    y <= 2100,
+    y <= 2100, // reasonable upper bound
     `Invalid date provided ${t} with timestamp ${t.getTime()}, you may have used microseconds instead of milliseconds`,
   );
 
