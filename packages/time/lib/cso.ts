@@ -424,7 +424,9 @@ export const isHalfMonth = (eventId: string): boolean => {
   const startDate = getParamsFromCsoEventId(eventId).startDate;
   return (
     startDate.getTime() ===
-    getCsoEventDates(startDate).tradingOpenHalfMonth.getTime()
+      getCsoEventDates(startDate).tradingOpenHalfMonth.getTime() ||
+    startDate.getTime() ===
+      getCsoEventDates(startDate).halfMonthEntryClosed.getTime()
   );
 };
 
