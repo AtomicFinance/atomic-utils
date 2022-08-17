@@ -413,6 +413,21 @@ export const findNumCyclesInPastMaturityExists = (
   );
 };
 
+/**
+ * isHalfMonth
+ *
+ * Determine if the current cycle is a half month cycle
+ * @param {string} eventId current time
+ * @returns {boolean} whether the current cycle is a half month
+ */
+export const isHalfMonth = (eventId: string): boolean => {
+  const startDate = getParamsFromCsoEventId(eventId).startDate;
+  return (
+    startDate.getTime() ===
+    getCsoEventDates(startDate).tradingOpenHalfMonth.getTime()
+  );
+};
+
 export interface StartEndDates {
   startDate: Date;
   endDate: Date;

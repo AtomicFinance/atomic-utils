@@ -15,6 +15,7 @@ import {
   getNextCycleMaturityDate,
   getParamsFromCsoEventId,
   getPreviousCycleMaturityDate,
+  isHalfMonth,
 } from '../../lib/cso';
 
 chai.use(sinonChai);
@@ -625,6 +626,25 @@ describe('CSO utilities', () => {
           Error,
           'Could not find cycle maturity in the past after checking 1 months',
         );
+      });
+    });
+
+    describe('isHalfMonth', () => {
+      it('should return true if cycle is half month', () => {
+        const csoEventDetails = [
+          'atomic',
+          'call_spread_v1',
+          'monthly',
+        ] as const;
+
+        const halfCycle = new Date(Date.UTC(2022, 6, 10));
+        const maturity = new Date(Date.UTC(2022, 6, 20));
+
+        const halfCycleEventId = getCsoEventId(halfCycle, ...csoEventDetails);
+        const fullCycleEventId = getCsoEventId(maturity, ...csoEventDetails);
+
+        expect(isHalfMonth(halfCycleEventId)).to.equal(true);
+        expect(isHalfMonth(fullCycleEventId)).to.equal(false);
       });
     });
   });
