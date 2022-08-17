@@ -387,7 +387,7 @@ describe('CSO utilities', () => {
           nextMaturity,
         } = i === 0 ? midYearDates : endYearDates;
 
-        it(`should correctly calculate CSO Event ID ${period}`, () => {
+        it.only(`should correctly calculate CSO Event ID ${period}`, () => {
           const csoEventDetails = [
             'atomic',
             'call_spread_v1',
@@ -434,6 +434,23 @@ describe('CSO utilities', () => {
 
           const { startDate: otherStartDate, endDate: otherEndDate } =
             getParamsFromCsoEventId(otherCsoEventId);
+
+          console.log(
+            'oneWeekBeforeNextCsoEventId',
+            oneWeekBeforeNextCsoEventId,
+          );
+          console.log('oneWeekAfterCsoEventId', oneWeekAfterCsoEventId);
+
+          const params = getParamsFromCsoEventId(oneWeekAfterCsoEventId);
+          console.log('params', params);
+          const csoEventDates = getCsoEventDates(params.startDate);
+          console.log('csoEventDates', csoEventDates);
+
+          console.log(
+            'params.startDate.getTime() === csoEventDates.tradingOpenHalfMonth.getTime()',
+            params.startDate.getTime() ===
+              csoEventDates.tradingOpenHalfMonth.getTime(),
+          );
 
           // Check that trading open starts at 12 pm UTC
           expect(tradingOpen.getUTCHours()).to.equal(12);
