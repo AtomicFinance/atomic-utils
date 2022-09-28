@@ -15,6 +15,7 @@ import {
   getNextCycleMaturityDate,
   getParamsFromCsoEventId,
   getPreviousCycleMaturityDate,
+  getUpcomingFriday,
   isHalfMonth,
 } from '../../lib/cso';
 
@@ -37,6 +38,48 @@ describe('CSO utilities', () => {
     new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // Dec
   ];
 
+  // example maturity June 24th, 2022
+  const midYearDates = {
+    prevMaturity: new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0)),
+    oneDayBefore: new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0)),
+    rightBefore: new Date(Date.UTC(2022, 5, 24, 7, 59, 59, 0)), // dlcExpiry
+    atMaturity: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // dlcExpiry
+    rightAfter: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1)),
+    sevenHoursAfter: new Date(Date.UTC(2022, 5, 24, 15, 0, 0, 0)), // dlcAttestation
+    eightHoursAfter: new Date(Date.UTC(2022, 5, 24, 16, 0, 0, 0)), // rolloverOpen
+    oneDayAfter: new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0)),
+    thirtyTwoHoursAfter: new Date(Date.UTC(2022, 5, 25, 16, 0, 0, 0)), // newEntryOpen
+    sixtyEightHoursAfter: new Date(Date.UTC(2022, 5, 27, 4, 0, 0, 0)), // newEntryClosed
+    seventySixHoursAfter: new Date(Date.UTC(2022, 5, 27, 12, 0, 0, 0)), // tradingOpen
+    oneWeekAfter: new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0)),
+    twoWeeksAfter: new Date(Date.UTC(2022, 6, 15, 4, 0, 0, 0)), // halfMonthEntryClosed
+    twoWeeksBeforeNext: new Date(Date.UTC(2022, 6, 15, 12, 0, 0, 0)), // tradingOpenHalfMonth
+    oneWeekBeforeNext: new Date(Date.UTC(2022, 6, 22, 8, 0, 0, 0)),
+    nextMaturity: new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0)), // dlcExpiry
+    finalMaturity: new Date(Date.UTC(2022, 7, 26, 8, 0, 0, 0)), // dlcExpiry
+  };
+
+  // example maturity Dec 30th, 2022
+  const endYearDates = {
+    prevMaturity: new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0)),
+    oneDayBefore: new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0)),
+    rightBefore: new Date(Date.UTC(2022, 11, 30, 7, 59, 59, 0)),
+    atMaturity: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // dlcExpiry
+    rightAfter: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1)),
+    sevenHoursAfter: new Date(Date.UTC(2022, 11, 30, 15, 0, 0, 0)), // dlcAttestation
+    eightHoursAfter: new Date(Date.UTC(2022, 11, 30, 16, 0, 0, 0)), // rolloverOpen
+    oneDayAfter: new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0)),
+    thirtyTwoHoursAfter: new Date(Date.UTC(2022, 11, 31, 16, 0, 0, 0)), // newEntryOpen
+    sixtyEightHoursAfter: new Date(Date.UTC(2023, 0, 2, 4, 0, 0, 0)), // newEntryClosed
+    seventySixHoursAfter: new Date(Date.UTC(2023, 0, 2, 12, 0, 0, 0)), // tradingOpen
+    oneWeekAfter: new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0)),
+    twoWeeksAfter: new Date(Date.UTC(2023, 0, 13, 4, 0, 0, 0)), // halfMonthEntryClosed
+    twoWeeksBeforeNext: new Date(Date.UTC(2023, 0, 13, 12, 0, 0, 0)), // tradingOpenHalfMonth
+    oneWeekBeforeNext: new Date(Date.UTC(2023, 0, 20, 8, 0, 0, 0)),
+    nextMaturity: new Date(Date.UTC(2023, 0, 27, 8, 0, 0, 0)), // dlcExpiry
+    finalMaturity: new Date(Date.UTC(2023, 1, 24, 8, 0, 0, 0)), // dlcExpiry
+  };
+
   describe('getLastFridayInMonth', () => {
     const year = 2022;
 
@@ -49,49 +92,35 @@ describe('CSO utilities', () => {
     }
   });
 
+  describe('getUpcomingFriday', () => {
+    it('should get upcoming friday', () => {
+      const friFromOneDayBefore = getUpcomingFriday(midYearDates.oneDayBefore);
+      const friFromRightBefore = getUpcomingFriday(midYearDates.rightBefore);
+      const friFromAtMaturity = getUpcomingFriday(midYearDates.atMaturity);
+      const friFromRightAfter = getUpcomingFriday(midYearDates.rightAfter);
+      const friFromSevenHoursAfter = getUpcomingFriday(
+        midYearDates.sevenHoursAfter,
+      );
+
+      expect(friFromOneDayBefore.getTime()).to.equal(
+        midYearDates.atMaturity.getTime(),
+      );
+      expect(friFromRightBefore.getTime()).to.equal(
+        midYearDates.atMaturity.getTime(),
+      );
+      expect(friFromAtMaturity.getTime()).to.equal(
+        midYearDates.oneWeekAfter.getTime(),
+      );
+      expect(friFromRightAfter.getTime()).to.equal(
+        midYearDates.oneWeekAfter.getTime(),
+      );
+      expect(friFromSevenHoursAfter.getTime()).to.equal(
+        midYearDates.oneWeekAfter.getTime(),
+      );
+    });
+  });
+
   describe('Cycle Maturity Helper Functions', () => {
-    // example maturity June 24th, 2022
-    const midYearDates = {
-      prevMaturity: new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0)),
-      oneDayBefore: new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0)),
-      rightBefore: new Date(Date.UTC(2022, 5, 24, 7, 59, 59, 0)), // dlcExpiry
-      atMaturity: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // dlcExpiry
-      rightAfter: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1)),
-      sevenHoursAfter: new Date(Date.UTC(2022, 5, 24, 15, 0, 0, 0)), // dlcAttestation
-      eightHoursAfter: new Date(Date.UTC(2022, 5, 24, 16, 0, 0, 0)), // rolloverOpen
-      oneDayAfter: new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0)),
-      thirtyTwoHoursAfter: new Date(Date.UTC(2022, 5, 25, 16, 0, 0, 0)), // newEntryOpen
-      sixtyEightHoursAfter: new Date(Date.UTC(2022, 5, 27, 4, 0, 0, 0)), // newEntryClosed
-      seventySixHoursAfter: new Date(Date.UTC(2022, 5, 27, 12, 0, 0, 0)), // tradingOpen
-      oneWeekAfter: new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0)),
-      twoWeeksAfter: new Date(Date.UTC(2022, 6, 15, 4, 0, 0, 0)), // halfMonthEntryClosed
-      twoWeeksBeforeNext: new Date(Date.UTC(2022, 6, 15, 12, 0, 0, 0)), // tradingOpenHalfMonth
-      oneWeekBeforeNext: new Date(Date.UTC(2022, 6, 22, 8, 0, 0, 0)),
-      nextMaturity: new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0)), // dlcExpiry
-      finalMaturity: new Date(Date.UTC(2022, 7, 26, 8, 0, 0, 0)), // dlcExpiry
-    };
-
-    // example maturity Dec 30th, 2022
-    const endYearDates = {
-      prevMaturity: new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0)),
-      oneDayBefore: new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0)),
-      rightBefore: new Date(Date.UTC(2022, 11, 30, 7, 59, 59, 0)),
-      atMaturity: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // dlcExpiry
-      rightAfter: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1)),
-      sevenHoursAfter: new Date(Date.UTC(2022, 11, 30, 15, 0, 0, 0)), // dlcAttestation
-      eightHoursAfter: new Date(Date.UTC(2022, 11, 30, 16, 0, 0, 0)), // rolloverOpen
-      oneDayAfter: new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0)),
-      thirtyTwoHoursAfter: new Date(Date.UTC(2022, 11, 31, 16, 0, 0, 0)), // newEntryOpen
-      sixtyEightHoursAfter: new Date(Date.UTC(2023, 0, 2, 4, 0, 0, 0)), // newEntryClosed
-      seventySixHoursAfter: new Date(Date.UTC(2023, 0, 2, 12, 0, 0, 0)), // tradingOpen
-      oneWeekAfter: new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0)),
-      twoWeeksAfter: new Date(Date.UTC(2023, 0, 13, 4, 0, 0, 0)), // halfMonthEntryClosed
-      twoWeeksBeforeNext: new Date(Date.UTC(2023, 0, 13, 12, 0, 0, 0)), // tradingOpenHalfMonth
-      oneWeekBeforeNext: new Date(Date.UTC(2023, 0, 20, 8, 0, 0, 0)),
-      nextMaturity: new Date(Date.UTC(2023, 0, 27, 8, 0, 0, 0)), // dlcExpiry
-      finalMaturity: new Date(Date.UTC(2023, 1, 24, 8, 0, 0, 0)), // dlcExpiry
-    };
-
     describe('getCurrentCycleMaturityDate', () => {
       for (let i = 0; i < 2; i++) {
         const period = i === 0 ? 'mid-year' : 'end-of-year';

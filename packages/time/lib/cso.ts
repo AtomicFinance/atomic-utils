@@ -242,6 +242,28 @@ export const getCsoStartAndEndDate = (t_: Date): StartEndDates => {
 };
 
 /**
+ * getUpcomingFriday
+ *
+ * From the current time, get the upcoming Friday.
+ * If the current time is Friday and is after 8am UTC, then return the next week's Friday
+ *
+ * @param {Date} t_ current time
+ * @returns
+ */
+export const getUpcomingFriday = (t_: Date): Date => {
+  const t = new Date(t_.getTime());
+  let dayDelta = (5 - t.getUTCDay()) % 7;
+
+  if (dayDelta === 0 && t.getUTCHours() >= 8) {
+    dayDelta = 7;
+  }
+
+  t.setUTCDate(t.getUTCDate() + dayDelta);
+
+  return new Date(t.setUTCHours(8, 0, 0, 0));
+};
+
+/**
  * getCsoEventId
  *
  * Pass in Date and return event ID of announcement that user can enter into immediately
