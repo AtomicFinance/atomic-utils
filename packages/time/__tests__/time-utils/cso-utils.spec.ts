@@ -52,7 +52,8 @@ describe('CSO utilities', () => {
     sixtyEightHoursAfter: new Date(Date.UTC(2022, 5, 27, 4, 0, 0, 0)), // newEntryClosed
     seventySixHoursAfter: new Date(Date.UTC(2022, 5, 27, 12, 0, 0, 0)), // tradingOpen
     oneWeekAfter: new Date(Date.UTC(2022, 6, 1, 8, 0, 0, 0)),
-    twoWeeksAfter: new Date(Date.UTC(2022, 6, 15, 4, 0, 0, 0)), // halfMonthEntryClosed
+    twoWeeksAfter: new Date(Date.UTC(2022, 6, 8, 8, 0, 0, 0)),
+    halfwayThrough: new Date(Date.UTC(2022, 6, 15, 4, 0, 0, 0)), // halfMonthEntryClosed
     twoWeeksBeforeNext: new Date(Date.UTC(2022, 6, 15, 12, 0, 0, 0)), // tradingOpenHalfMonth
     oneWeekBeforeNext: new Date(Date.UTC(2022, 6, 22, 8, 0, 0, 0)),
     nextMaturity: new Date(Date.UTC(2022, 6, 29, 8, 0, 0, 0)), // dlcExpiry
@@ -73,7 +74,8 @@ describe('CSO utilities', () => {
     sixtyEightHoursAfter: new Date(Date.UTC(2023, 0, 2, 4, 0, 0, 0)), // newEntryClosed
     seventySixHoursAfter: new Date(Date.UTC(2023, 0, 2, 12, 0, 0, 0)), // tradingOpen
     oneWeekAfter: new Date(Date.UTC(2023, 0, 6, 8, 0, 0, 0)),
-    twoWeeksAfter: new Date(Date.UTC(2023, 0, 13, 4, 0, 0, 0)), // halfMonthEntryClosed
+    twoWeeksAfter: new Date(Date.UTC(2023, 0, 13, 8, 0, 0, 0)),
+    halfwayThrough: new Date(Date.UTC(2023, 0, 13, 4, 0, 0, 0)), // halfMonthEntryClosed
     twoWeeksBeforeNext: new Date(Date.UTC(2023, 0, 13, 12, 0, 0, 0)), // tradingOpenHalfMonth
     oneWeekBeforeNext: new Date(Date.UTC(2023, 0, 20, 8, 0, 0, 0)),
     nextMaturity: new Date(Date.UTC(2023, 0, 27, 8, 0, 0, 0)), // dlcExpiry
@@ -93,31 +95,43 @@ describe('CSO utilities', () => {
   });
 
   describe('getUpcomingFriday', () => {
-    it('should get upcoming friday', () => {
-      const friFromOneDayBefore = getUpcomingFriday(midYearDates.oneDayBefore);
-      const friFromRightBefore = getUpcomingFriday(midYearDates.rightBefore);
-      const friFromAtMaturity = getUpcomingFriday(midYearDates.atMaturity);
-      const friFromRightAfter = getUpcomingFriday(midYearDates.rightAfter);
-      const friFromSevenHoursAfter = getUpcomingFriday(
-        midYearDates.sevenHoursAfter,
-      );
+    for (let i = 0; i < 2; i++) {
+      const period = i === 0 ? 'mid-year' : 'end-of-year';
 
-      expect(friFromOneDayBefore.getTime()).to.equal(
-        midYearDates.atMaturity.getTime(),
-      );
-      expect(friFromRightBefore.getTime()).to.equal(
-        midYearDates.atMaturity.getTime(),
-      );
-      expect(friFromAtMaturity.getTime()).to.equal(
-        midYearDates.oneWeekAfter.getTime(),
-      );
-      expect(friFromRightAfter.getTime()).to.equal(
-        midYearDates.oneWeekAfter.getTime(),
-      );
-      expect(friFromSevenHoursAfter.getTime()).to.equal(
-        midYearDates.oneWeekAfter.getTime(),
-      );
-    });
+      const {
+        oneDayBefore,
+        rightBefore,
+        atMaturity,
+        rightAfter,
+        sevenHoursAfter,
+        seventySixHoursAfter,
+        oneWeekAfter,
+        twoWeeksAfter,
+      } = i === 0 ? midYearDates : endYearDates;
+
+      it(`should get upcoming friday for cycle period ${period}`, () => {
+        const friFromOneDayBefore = getUpcomingFriday(oneDayBefore);
+        const friFromRightBefore = getUpcomingFriday(rightBefore);
+        const friFromAtMaturity = getUpcomingFriday(atMaturity);
+        const friFromRightAfter = getUpcomingFriday(rightAfter);
+        const friFromSevenHoursAfter = getUpcomingFriday(sevenHoursAfter);
+        const friFromSeventySixHoursAfter =
+          getUpcomingFriday(seventySixHoursAfter);
+        const friFromOneWeekAfter = getUpcomingFriday(oneWeekAfter);
+
+        expect(friFromOneDayBefore.getTime()).to.equal(atMaturity.getTime());
+        expect(friFromRightBefore.getTime()).to.equal(atMaturity.getTime());
+        expect(friFromAtMaturity.getTime()).to.equal(oneWeekAfter.getTime());
+        expect(friFromRightAfter.getTime()).to.equal(oneWeekAfter.getTime());
+        expect(friFromSevenHoursAfter.getTime()).to.equal(
+          oneWeekAfter.getTime(),
+        );
+        expect(friFromSeventySixHoursAfter.getTime()).to.equal(
+          oneWeekAfter.getTime(),
+        );
+        expect(friFromOneWeekAfter.getTime()).to.equal(twoWeeksAfter.getTime());
+      });
+    }
   });
 
   describe('Cycle Maturity Helper Functions', () => {
@@ -274,7 +288,7 @@ describe('CSO utilities', () => {
           thirtyTwoHoursAfter,
           sixtyEightHoursAfter,
           seventySixHoursAfter,
-          twoWeeksAfter,
+          halfwayThrough,
           twoWeeksBeforeNext,
           nextMaturity,
         } = i === 0 ? midYearDates : endYearDates;
@@ -290,7 +304,7 @@ describe('CSO utilities', () => {
             getCsoEvent(sixtyEightHoursAfter);
           const seventySixHoursAfterCsoEvent =
             getCsoEvent(seventySixHoursAfter);
-          const twoWeeksAfterCsoEvent = getCsoEvent(twoWeeksAfter);
+          const twoWeeksAfterCsoEvent = getCsoEvent(halfwayThrough);
           const twoWeeksBeforeNextCsoEvent = getCsoEvent(twoWeeksBeforeNext);
           const nextMaturityCsoEvent = getCsoEvent(nextMaturity);
 
