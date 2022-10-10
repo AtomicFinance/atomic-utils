@@ -28,21 +28,26 @@ export interface StrategyTrade {
   quantity: number;
   status: string;
   tag: string;
+  created_at: string;
+  updated_at: string;
 }
 export type StrategyTradesResponse = StrategyTrade[];
 
 export interface StrategyStateResponse {
   id: number;
   offer_id: string;
-  apy_all: number;
-  apy_2y: number;
-  apy_1y: number;
-  apy_6m: number;
-  apy_3m: number;
-  apy_1m: number;
-  sharpe_ratio: number;
+  apy_all: string;
+  apy_2y: string;
+  apy_1y: string;
+  apy_6m: string;
+  apy_3m: string;
+  apy_1m: string;
+  max_drawdown_percentage: string;
+  max_drawdown_duration: string;
   timestamp: string;
   strategy_data: string;
+  created_at: string;
+  updated_at: string;
 }
 
 /**
