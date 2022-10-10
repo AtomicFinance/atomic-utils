@@ -31,6 +31,8 @@ const STRATEGY_TRADES_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
   {
     id: 2,
@@ -44,6 +46,8 @@ const STRATEGY_TRADES_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
   {
     id: 3,
@@ -57,6 +61,8 @@ const STRATEGY_TRADES_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
 ];
 
@@ -73,6 +79,8 @@ const STRATEGY_TRADES_FILTERED_START_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
   {
     id: 3,
@@ -86,6 +94,8 @@ const STRATEGY_TRADES_FILTERED_START_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
 ];
 
@@ -102,6 +112,8 @@ const STRATEGY_TRADES_FILTERED_END_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
   {
     id: 2,
@@ -115,21 +127,26 @@ const STRATEGY_TRADES_FILTERED_END_RESPONSE: StrategyTradesResponse = [
     quantity: 10,
     status: 'filled',
     tag: 'test',
+    created_at: '2022-10-10T05:36:26.237Z',
+    updated_at: '2022-10-10T05:36:26.237Z',
   },
 ];
 
 const STRATEGY_STATE_RESPONSE: StrategyStateResponse = {
   id: 2,
   offer_id: 'ribbon',
-  apy_all: 16,
-  apy_2y: 15,
-  apy_1y: 11,
-  apy_6m: 9,
-  apy_3m: 8,
-  apy_1m: 7,
-  sharpe_ratio: 1,
-  timestamp: '0000',
+  apy_all: '16',
+  apy_2y: '15',
+  apy_1y: '11',
+  apy_6m: '9',
+  apy_3m: '8',
+  apy_1m: '7',
+  max_drawdown_percentage: '5.23',
+  max_drawdown_duration: '6.1',
+  timestamp: '0',
   strategy_data: '',
+  created_at: '2022-10-10T05:36:26.237Z',
+  updated_at: '2022-10-10T05:36:26.237Z',
 };
 
 const ECONNREFUSED = {
