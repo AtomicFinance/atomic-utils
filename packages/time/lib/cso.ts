@@ -36,10 +36,10 @@ export const STR_DATE_REGEX = /(\d{1,2})([A-Z]+)(\d{1,2})/;
  */
 export const getLastFridayInMonth = (y: number, m: number): Date => {
   const lastDay = new Date(Date.UTC(y, m, 0, 8, 0, 0));
-  if (lastDay.getDay() < 5) {
+  if (lastDay.getUTCDay() < 5) {
     lastDay.setDate(lastDay.getDate() - 7);
   }
-  lastDay.setDate(lastDay.getDate() - (lastDay.getDay() - 5));
+  lastDay.setDate(lastDay.getDate() - (lastDay.getUTCDay() - 5));
 
   return lastDay;
 };
