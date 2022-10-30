@@ -11,6 +11,7 @@ import axios, {
 import { IOptions } from './options';
 
 const API_PREFIX = 'api/v1';
+const DEFAULT_TIMEOUT = 20000;
 
 /**
  * Oracle client
@@ -32,7 +33,7 @@ export class BaseClient {
     const config: AxiosRequestConfig = {
       baseURL: `${this.opts.uri}/${this.opts.prefix || API_PREFIX}/`,
       url: endpoint,
-      timeout: 20000,
+      timeout: this.opts.timeout || DEFAULT_TIMEOUT,
       method,
       params,
       data: method === 'GET' ? undefined : data,
