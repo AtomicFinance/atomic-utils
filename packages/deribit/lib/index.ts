@@ -11,7 +11,7 @@ export const getStrDate = (date: number | Date): string => {
 
   const day = date.getUTCDate();
   const month = date
-    .toLocaleString('default', { month: 'short', timeZone: 'UTC' })
+    .toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })
     .toUpperCase()
     .replace('.', '');
   const year = date.toLocaleDateString('pl', {
