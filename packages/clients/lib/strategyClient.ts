@@ -44,6 +44,7 @@ export interface StrategyStateResponse {
   apy_1m: string;
   max_drawdown_percentage: string;
   max_drawdown_duration: string;
+  longest_gap_duration: string;
   timestamp: string;
   strategy_data: string;
   created_at: string;
