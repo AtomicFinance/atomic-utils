@@ -143,6 +143,7 @@ const STRATEGY_STATE_RESPONSE: StrategyStateResponse = {
   apy_1m: '7',
   max_drawdown_percentage: '5.23',
   max_drawdown_duration: '6.1',
+  longest_gap_duration: '2',
   timestamp: '0',
   strategy_data: '',
   created_at: '2022-10-10T05:36:26.237Z',
