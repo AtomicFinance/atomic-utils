@@ -324,6 +324,17 @@ describe('CSO utilities', () => {
     });
 
     describe('getCsoEventId', () => {
+      const csoEventDetails = ['atomic', 'call_spread_v1', 'monthly'] as const;
+
+      it.only('should', () => {
+        const wrongEventId = getCsoEventId(
+          new Date('2023-03-31T19:46:00.000Z'),
+          ...csoEventDetails,
+        );
+
+        console.log('wrongEventId', wrongEventId);
+      });
+
       for (let i = 0; i < 2; i++) {
         const period = i === 0 ? 'mid-year' : 'end-of-year';
 
@@ -337,12 +348,6 @@ describe('CSO utilities', () => {
         } = i === 0 ? midYearDates : endYearDates;
 
         it(`should correctly calculate CSO Event ID ${period}`, () => {
-          const csoEventDetails = [
-            'atomic',
-            'call_spread_v1',
-            'monthly',
-          ] as const;
-
           const { tradingOpen, tradingOpenHalfMonth, upcomingDlcExpiry } =
             getCsoEventDates(atMaturity);
           const {
