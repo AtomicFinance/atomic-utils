@@ -10,6 +10,7 @@ import {
   getCsoEvent,
   getCsoEventDates,
   getCsoEventId,
+  getCsoStartAndEndDate,
   getCurrentCycleMaturityDate,
   getLastFridayInMonth,
   getNextCycleMaturityDate,
@@ -688,6 +689,70 @@ describe('CSO utilities', () => {
 
         expect(isHalfMonth(halfCycleEventId)).to.equal(true);
         expect(isHalfMonth(fullCycleEventId)).to.equal(false);
+      });
+    });
+
+    describe('getCsoStartAndEndDate', () => {
+      const beforeHalfMonth = new Date(Date.UTC(2023, 6, 4));
+
+      const provider = 'atomic';
+      const strategyId = 'call_spread_v1';
+      const period = 'monthly';
+
+      it('should calculate properly for one and a half month', () => {
+        const { startDate, endDate } = getCsoStartAndEndDate(
+          beforeHalfMonth,
+          true,
+        );
+
+        const eventId = getCsoEventId(
+          beforeHalfMonth,
+          provider,
+          strategyId,
+          period,
+          true,
+        );
+
+        const params = getParamsFromCsoEventId(eventId);
+
+        const expectedStartDate = new Date(Date.UTC(2023, 6, 14, 4)); // half month entry close
+        const expectedParamsStart = new Date(Date.UTC(2023, 6, 14, 10)); // half month trading start
+        const expectedEndDate = new Date(Date.UTC(2023, 7, 25, 8));
+
+        expect(startDate.getTime()).to.equal(expectedStartDate.getTime());
+        expect(endDate.getTime()).to.equal(expectedEndDate.getTime());
+
+        expect(params.startDate.getTime()).to.equal(
+          expectedParamsStart.getTime(),
+        );
+        expect(params.endDate.getTime()).to.equal(expectedEndDate.getTime());
+      });
+
+      it('should calculate properly for half month', () => {
+        const { startDate, endDate } = getCsoStartAndEndDate(
+          beforeHalfMonth,
+          false,
+        );
+
+        const eventId = getCsoEventId(
+          beforeHalfMonth,
+          provider,
+          strategyId,
+          period,
+          false,
+        );
+
+        const params = getParamsFromCsoEventId(eventId);
+
+        const expectedStartDate = new Date(Date.UTC(2023, 6, 14, 4));
+        const expectedParamsStart = new Date(Date.UTC(2023, 6, 14, 10)); // half month trading start
+        const expectedEndDate = new Date(Date.UTC(2023, 6, 28, 8));
+
+        expect(startDate.getTime()).to.equal(expectedStartDate.getTime());
+        expect(endDate.getTime()).to.equal(expectedEndDate.getTime());
+        expect(params.startDate.getTime()).to.equal(
+          expectedParamsStart.getTime(),
+        );
       });
     });
   });
