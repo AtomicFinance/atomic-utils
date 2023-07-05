@@ -202,7 +202,10 @@ export const getCsoEvent = (t_: Date): CsoEvent => {
  * @param t_ current time
  * @returns {StartEndDates} start and end dates of the CSO event
  */
-export const getCsoStartAndEndDate = (t_: Date): StartEndDates => {
+export const getCsoStartAndEndDate = (
+  t_: Date,
+  forceExtendedPeriod = false,
+): StartEndDates => {
   const t = new Date(t_.getTime());
 
   const csoEvent = getCsoEvent(t);
@@ -227,10 +230,14 @@ export const getCsoStartAndEndDate = (t_: Date): StartEndDates => {
       endDate: nextDlcExpiry,
     };
   } else if (csoEvent === 'newEntryClosed' || csoEvent === 'tradingOpen') {
+    const { upcomingDlcExpiry: followingDlcExpiry } = getCsoEventDates(
+      new Date(upcomingDlcExpiry.getTime() + 1),
+    );
+
     // Create half month event ID
     return {
       startDate: halfMonthEntryClosed,
-      endDate: upcomingDlcExpiry,
+      endDate: forceExtendedPeriod ? followingDlcExpiry : upcomingDlcExpiry,
     };
   } else {
     // Create full month for current month
@@ -279,10 +286,11 @@ export const getCsoEventId = (
   provider: string,
   strategyId: string,
   period: CsoPeriod,
+  forceExtendedPeriod = false,
 ): string => {
   const t = new Date(t_.getTime());
 
-  const { startDate, endDate } = getCsoStartAndEndDate(t);
+  const { startDate, endDate } = getCsoStartAndEndDate(t, forceExtendedPeriod);
 
   return [
     provider,
