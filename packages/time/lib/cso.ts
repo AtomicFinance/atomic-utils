@@ -9,7 +9,11 @@ export type CsoEvent =
   | 'tradingOpenHalfMonth';
 
 export type CsoPeriod = 'weekly' | 'monthly' | 'bimonthly';
-export type CsoLength = 'fullmonth' | 'halfmonth';
+export type CsoLength =
+  | 'full-month'
+  | 'half-month'
+  | 'one-and-a-half-months'
+  | 'two-months';
 
 export const DLC_EXPIRY_LEN = 7;
 export const DLC_ATTESTATION_LEN = 1;
@@ -458,6 +462,25 @@ export const isHalfMonth = (eventId: string): boolean => {
     startDate.getTime() ===
       getCsoEventDates(startDate).halfMonthEntryClosed.getTime()
   );
+};
+
+export const getCsoLength = (eventId: string): CsoLength => {
+  const { startDate, endDate } = getParamsFromCsoEventId(eventId);
+
+  const containsHalfMonth = isHalfMonth(eventId);
+
+  // Get the difference in days
+  const diffInDays = Math.floor(
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  if (containsHalfMonth) {
+    if (diffInDays > 30) return 'one-and-a-half-months';
+    else return 'half-month';
+  } else {
+    if (diffInDays > 45) return 'two-months';
+    else return 'full-month';
+  }
 };
 
 export interface StartEndDates {

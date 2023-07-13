@@ -10,6 +10,7 @@ import {
   getCsoEvent,
   getCsoEventDates,
   getCsoEventId,
+  getCsoLength,
   getCsoStartAndEndDate,
   getCurrentCycleMaturityDate,
   getLastFridayInMonth,
@@ -753,6 +754,28 @@ describe('CSO utilities', () => {
         expect(params.startDate.getTime()).to.equal(
           expectedParamsStart.getTime(),
         );
+      });
+    });
+
+    describe('getCsoLength', () => {
+      it('should return "half-month" for a half month event', () => {
+        const eventId = 'atomic-oyster-monthly-11AUG23-25AUG23';
+        expect(getCsoLength(eventId)).to.equal('half-month');
+      });
+
+      it('should return "full-month" for a full month event', () => {
+        const eventId = 'atomic-oyster-monthly-31JUL23-25AUG23';
+        expect(getCsoLength(eventId)).to.equal('full-month');
+      });
+
+      it('should return "one-and-a-half-months" for a half month event starting one month earlier', () => {
+        const eventId = 'atomic-oyster-monthly-14JUL23-25AUG23';
+        expect(getCsoLength(eventId)).to.equal('one-and-a-half-months');
+      });
+
+      it('should return "two-months" for a two months event', () => {
+        const eventId = 'atomic-oyster-monthly-3JUL23-25AUG23';
+        expect(getCsoLength(eventId)).to.equal('two-months');
       });
     });
   });
