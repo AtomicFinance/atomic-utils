@@ -146,6 +146,8 @@ const STRATEGY_STATE_RESPONSE: StrategyStateResponse = {
   longest_gap_duration: '2',
   timestamp: '0',
   strategy_data: '',
+  tvl: '0',
+  max_capacity: '0',
   created_at: '2022-10-10T05:36:26.237Z',
   updated_at: '2022-10-10T05:36:26.237Z',
 };
