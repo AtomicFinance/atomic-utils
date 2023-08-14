@@ -47,6 +47,8 @@ export interface StrategyStateResponse {
   longest_gap_duration: string;
   timestamp: string;
   strategy_data: string;
+  tvl: string;
+  max_capacity: string;
   created_at: string;
   updated_at: string;
 }
