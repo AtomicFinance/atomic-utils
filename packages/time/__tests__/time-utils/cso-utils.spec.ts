@@ -49,6 +49,7 @@ describe('CSO utilities', () => {
     rightBefore: new Date(Date.UTC(2022, 5, 24, 7, 59, 59, 0)), // dlcExpiry
     atMaturity: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // dlcExpiry
     rightAfter: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 1)),
+    minuteAfter: new Date(Date.UTC(2022, 5, 24, 8, 1, 0, 0)),
     sevenHoursAfter: new Date(Date.UTC(2022, 5, 24, 15, 0, 0, 0)), // dlcAttestation
     eightHoursAfter: new Date(Date.UTC(2022, 5, 24, 16, 0, 0, 0)), // rolloverOpen
     oneDayAfter: new Date(Date.UTC(2022, 5, 25, 8, 0, 0, 0)),
@@ -72,6 +73,7 @@ describe('CSO utilities', () => {
     rightBefore: new Date(Date.UTC(2022, 11, 30, 7, 59, 59, 0)),
     atMaturity: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // dlcExpiry
     rightAfter: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 1)),
+    minuteAfter: new Date(Date.UTC(2022, 11, 30, 8, 1, 0, 0)),
     sevenHoursAfter: new Date(Date.UTC(2022, 11, 30, 15, 0, 0, 0)), // dlcAttestation
     eightHoursAfter: new Date(Date.UTC(2022, 11, 30, 16, 0, 0, 0)), // rolloverOpen
     oneDayAfter: new Date(Date.UTC(2022, 11, 31, 8, 0, 0, 0)),
@@ -147,6 +149,7 @@ describe('CSO utilities', () => {
         weekBeforeMaturity,
         atMaturity,
         rightAfter,
+        minuteAfter,
         sevenHoursAfter,
         seventySixHoursAfter,
         oneWeekAfter,
@@ -154,16 +157,22 @@ describe('CSO utilities', () => {
       } = i === 0 ? midYearDates : endYearDates;
 
       it(`should get previous friday for cycle period ${period}`, () => {
+        const friFromMaturity = getPreviousFriday(atMaturity);
         const friFromRightAfter = getPreviousFriday(rightAfter);
+        const friFromMinuteAfter = getPreviousFriday(minuteAfter);
         const friFromSevenHoursAfter = getPreviousFriday(sevenHoursAfter);
         const friFromSeventySixHoursAfter =
           getPreviousFriday(seventySixHoursAfter);
         const friFromOneWeekAfter = getPreviousFriday(oneWeekAfter);
         const friFromTwoWeeksAfter = getPreviousFriday(twoWeeksAfter);
 
+        expect(friFromMaturity.getTime()).to.equal(
+          weekBeforeMaturity.getTime(),
+        );
         expect(friFromRightAfter.getTime()).to.equal(
           weekBeforeMaturity.getTime(),
         );
+        expect(friFromMinuteAfter.getTime()).to.equal(atMaturity.getTime());
         expect(friFromSevenHoursAfter.getTime()).to.equal(atMaturity.getTime());
         expect(friFromSeventySixHoursAfter.getTime()).to.equal(
           atMaturity.getTime(),

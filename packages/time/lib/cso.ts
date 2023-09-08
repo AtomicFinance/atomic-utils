@@ -287,7 +287,14 @@ export const getPreviousFriday = (t_: Date): Date => {
   const t = new Date(t_.getTime());
   let dayDelta = (5 - t.getUTCDay() + 7) % 7;
 
-  if (dayDelta === 0 && t.getUTCHours() > 8) {
+  if (
+    dayDelta === 0 &&
+    (t.getUTCHours() > 8 ||
+      (t.getUTCHours() === 8 &&
+        t.getUTCMinutes() === 0 &&
+        t.getUTCSeconds() > 0) ||
+      (t.getUTCHours() === 8 && t.getUTCMinutes() > 0))
+  ) {
     dayDelta = 7;
   }
 
