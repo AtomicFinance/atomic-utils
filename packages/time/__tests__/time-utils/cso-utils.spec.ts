@@ -17,6 +17,7 @@ import {
   getNextCycleMaturityDate,
   getParamsFromCsoEventId,
   getPreviousCycleMaturityDate,
+  getPreviousFriday,
   getUpcomingFriday,
   isHalfMonth,
 } from '../../lib/cso';
@@ -43,6 +44,7 @@ describe('CSO utilities', () => {
   // example maturity June 24th, 2022
   const midYearDates = {
     prevMaturity: new Date(Date.UTC(2022, 4, 27, 8, 0, 0, 0)),
+    weekBeforeMaturity: new Date(Date.UTC(2022, 5, 17, 8, 0, 0, 0)),
     oneDayBefore: new Date(Date.UTC(2022, 5, 23, 8, 0, 0, 0)),
     rightBefore: new Date(Date.UTC(2022, 5, 24, 7, 59, 59, 0)), // dlcExpiry
     atMaturity: new Date(Date.UTC(2022, 5, 24, 8, 0, 0, 0)), // dlcExpiry
@@ -65,6 +67,7 @@ describe('CSO utilities', () => {
   // example maturity Dec 30th, 2022
   const endYearDates = {
     prevMaturity: new Date(Date.UTC(2022, 10, 25, 8, 0, 0, 0)),
+    weekBeforeMaturity: new Date(Date.UTC(2022, 11, 23, 8, 0, 0, 0)),
     oneDayBefore: new Date(Date.UTC(2022, 11, 29, 8, 0, 0, 0)),
     rightBefore: new Date(Date.UTC(2022, 11, 30, 7, 59, 59, 0)),
     atMaturity: new Date(Date.UTC(2022, 11, 30, 8, 0, 0, 0)), // dlcExpiry
@@ -132,6 +135,41 @@ describe('CSO utilities', () => {
           oneWeekAfter.getTime(),
         );
         expect(friFromOneWeekAfter.getTime()).to.equal(twoWeeksAfter.getTime());
+      });
+    }
+  });
+
+  describe('getPreviousFriday', () => {
+    for (let i = 0; i < 2; i++) {
+      const period = i === 0 ? 'mid-year' : 'end-of-year';
+
+      const {
+        weekBeforeMaturity,
+        atMaturity,
+        rightAfter,
+        sevenHoursAfter,
+        seventySixHoursAfter,
+        oneWeekAfter,
+        twoWeeksAfter,
+      } = i === 0 ? midYearDates : endYearDates;
+
+      it(`should get previous friday for cycle period ${period}`, () => {
+        const friFromRightAfter = getPreviousFriday(rightAfter);
+        const friFromSevenHoursAfter = getPreviousFriday(sevenHoursAfter);
+        const friFromSeventySixHoursAfter =
+          getPreviousFriday(seventySixHoursAfter);
+        const friFromOneWeekAfter = getPreviousFriday(oneWeekAfter);
+        const friFromTwoWeeksAfter = getPreviousFriday(twoWeeksAfter);
+
+        expect(friFromRightAfter.getTime()).to.equal(
+          weekBeforeMaturity.getTime(),
+        );
+        expect(friFromSevenHoursAfter.getTime()).to.equal(atMaturity.getTime());
+        expect(friFromSeventySixHoursAfter.getTime()).to.equal(
+          atMaturity.getTime(),
+        );
+        expect(friFromOneWeekAfter.getTime()).to.equal(atMaturity.getTime());
+        expect(friFromTwoWeeksAfter.getTime()).to.equal(oneWeekAfter.getTime());
       });
     }
   });
