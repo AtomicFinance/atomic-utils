@@ -275,6 +275,28 @@ export const getUpcomingFriday = (t_: Date): Date => {
 };
 
 /**
+ * getPreviousFriday
+ *
+ * From the current time, get the previous Friday.
+ * If the current time is Friday and is before 8am UTC, then return the previous week's Friday
+ *
+ * @param {Date} t_ current time
+ * @returns
+ */
+export const getPreviousFriday = (t_: Date): Date => {
+  const t = new Date(t_.getTime());
+  let dayDelta = (5 - t.getUTCDay() + 7) % 7;
+
+  if (dayDelta === 0 && t.getUTCHours() > 8) {
+    dayDelta = 7;
+  }
+
+  t.setUTCDate(t.getUTCDate() - (7 - dayDelta));
+
+  return new Date(t.setUTCHours(8, 0, 0, 0));
+};
+
+/**
  * getCsoEventId
  *
  * Pass in Date and return event ID of announcement that user can enter into immediately
