@@ -1,6 +1,6 @@
 {
   "name": "@atomic-utils/time",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Atomic Time Utils",
   "scripts": {
     "test": "../../node_modules/.bin/nyc --reporter=lcov --reporter=text --extension=.ts ../../node_modules/.bin/mocha --require ts-node/register --recursive \"__tests__/**/*.spec.*\"",
@@ -23,7 +23,7 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@atomic-utils/deribit": "^0.3.2",
+    "@atomic-utils/deribit": "^0.3.3",
     "@sentry/node": "6.16.1"
   },
   "devDependencies": {
