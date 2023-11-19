@@ -217,6 +217,10 @@ export const getCsoStartAndEndDate = (
   const { newEntryClosed, halfMonthEntryClosed, upcomingDlcExpiry } =
     getCsoEventDates(t);
 
+  const { upcomingDlcExpiry: followingDlcExpiry } = getCsoEventDates(
+    new Date(upcomingDlcExpiry.getTime() + 1),
+  );
+
   if (
     csoEvent === 'halfMonthEntryClosed' ||
     csoEvent === 'tradingOpenHalfMonth'
@@ -229,15 +233,15 @@ export const getCsoStartAndEndDate = (
       upcomingDlcExpiry: nextDlcExpiry,
     } = getCsoEventDates(nextT);
 
-    return {
-      startDate: nextNewEntryClosed,
-      endDate: nextDlcExpiry,
-    };
-  } else if (csoEvent === 'newEntryClosed' || csoEvent === 'tradingOpen') {
     const { upcomingDlcExpiry: followingDlcExpiry } = getCsoEventDates(
-      new Date(upcomingDlcExpiry.getTime() + 1),
+      new Date(nextDlcExpiry.getTime() + 1),
     );
 
+    return {
+      startDate: nextNewEntryClosed,
+      endDate: forceExtendedPeriod ? followingDlcExpiry : nextDlcExpiry,
+    };
+  } else if (csoEvent === 'newEntryClosed' || csoEvent === 'tradingOpen') {
     // Create half month event ID
     return {
       startDate: halfMonthEntryClosed,
@@ -247,7 +251,7 @@ export const getCsoStartAndEndDate = (
     // Create full month for current month
     return {
       startDate: newEntryClosed,
-      endDate: upcomingDlcExpiry,
+      endDate: forceExtendedPeriod ? followingDlcExpiry : upcomingDlcExpiry,
     };
   }
 };

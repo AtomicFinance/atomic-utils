@@ -742,6 +742,7 @@ describe('CSO utilities', () => {
 
     describe('getCsoStartAndEndDate', () => {
       const beforeHalfMonth = new Date(Date.UTC(2023, 6, 4));
+      const beforeFullMonth = new Date(Date.UTC(2023, 6, 18));
 
       const provider = 'atomic';
       const strategyId = 'call_spread_v1';
@@ -801,6 +802,35 @@ describe('CSO utilities', () => {
         expect(params.startDate.getTime()).to.equal(
           expectedParamsStart.getTime(),
         );
+      });
+
+      it('should calculate properly for two months', () => {
+        const { startDate, endDate } = getCsoStartAndEndDate(
+          beforeFullMonth,
+          true,
+        );
+
+        const eventId = getCsoEventId(
+          beforeFullMonth,
+          provider,
+          strategyId,
+          period,
+          true,
+        );
+
+        const params = getParamsFromCsoEventId(eventId);
+
+        const expectedStartDate = new Date(Date.UTC(2023, 6, 31, 4)); // full month trading start
+        const expectedParamsStart = new Date(Date.UTC(2023, 6, 31, 4)); // full month trading start
+        const expectedEndDate = new Date(Date.UTC(2023, 8, 29, 8));
+
+        expect(startDate.getTime()).to.equal(expectedStartDate.getTime());
+        expect(endDate.getTime()).to.equal(expectedEndDate.getTime());
+
+        expect(params.startDate.getTime()).to.equal(
+          expectedParamsStart.getTime(),
+        );
+        expect(params.endDate.getTime()).to.equal(expectedEndDate.getTime());
       });
     });
 
