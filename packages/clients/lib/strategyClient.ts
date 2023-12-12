@@ -23,6 +23,7 @@ export interface StrategyTrade {
   asset: string;
   direction: string;
   price: number;
+  original_price: number | undefined;
   underlying_price: number;
   timestamp: number;
   quantity: number;
