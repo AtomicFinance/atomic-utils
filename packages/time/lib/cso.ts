@@ -15,6 +15,8 @@ export type CsoLength =
   | 'one-and-a-half-months'
   | 'two-months';
 
+export type CsoEventIdType = 'period' | 'split' | 'unsplit';
+
 export const DLC_EXPIRY_LEN = 7;
 export const DLC_ATTESTATION_LEN = 1;
 export const ROLLOVER_OPEN_LEN = 24;
@@ -339,6 +341,63 @@ export const getCsoEventId = (
 };
 
 /**
+ * getCsoTradeSplitEventId
+ *
+ * This function generates an event ID for a split trade.
+ *
+ * @param {string} provider - The company or trader providing the strategy.
+ * @param {string} strategyId - The unique identifier for the strategy.
+ * @param {number} tradeIndex - The index of the trade.
+ * @returns {string} - The event ID string in the format [provider]-[strategyId]-trade-[tradeIndex].
+ *                     i.e. atomic-oyster-trade-84
+ */
+export const getCsoTradeSplitEventId = (
+  provider: string,
+  strategyId: string,
+  tradeIndex: number,
+): string => {
+  return [provider, strategyId, 'trade', tradeIndex].join('-');
+};
+
+/**
+ * getCsoTradeUnsplitEventId
+ *
+ * This function generates an event ID for an unsplit trade.
+ *
+ * @param {Date} t_ - The current time.
+ * @param {string} provider - The company or trader providing the strategy.
+ * @param {string} strategyId - The unique identifier for the strategy.
+ * @param {number} numTrades - The number of trades.
+ * @returns {string} - The event ID string in the format [provider]-[strategyId]-[numTrades]-trades-[startDate].
+ *                     i.e. atomic-oyster-5-trades-1JAN24
+ */
+export const getCsoTradeUnsplitEventId = (
+  t_: Date,
+  provider: string,
+  strategyId: string,
+  numTrades: number,
+): string => {
+  const t = new Date(t_.getTime());
+
+  return [provider, strategyId, numTrades, 'trades', getStrDate(t)].join('-');
+};
+
+export const getManualEventId = (
+  provider: string,
+  source: string,
+  maturity: Date,
+  symbol = 'BTC',
+): string => {
+  const month = maturity
+    .toLocaleString('default', { month: 'short' })
+    .toUpperCase()
+    .split('.')[0];
+  const year = maturity.getFullYear().toString().slice(-2);
+  const day = maturity.getDate().toString();
+  return `${provider}-${source}-${symbol}-${day}${month}${year}`;
+};
+
+/**
  * getStartAndEndDateFromCsoEventId
  *
  * Pass in eventId and return start and end date by checking if date is
@@ -373,6 +432,127 @@ export const getParamsFromCsoEventId = (eventId: string): CsoParams => {
     startDate,
     endDate,
   };
+};
+
+export const getParamsFromCsoTradeSplitEventId = (
+  eventId: string,
+): CsoSplitParams => {
+  const eventParams = eventId.split('-');
+
+  if (eventParams.length !== 4)
+    throw Error(
+      `Invalid eventId provided: ${eventId}. Expected format [provider]-[strategyId]-[trade]-[tradeIndex]`,
+    );
+
+  const [provider, strategyId, , tradeIndexStr] = eventParams;
+
+  const tradeIndex = parseInt(tradeIndexStr);
+
+  if (isNaN(tradeIndex))
+    throw Error(
+      `Invalid tradeIndex provided: ${tradeIndexStr}. Expected integer`,
+    );
+
+  return {
+    provider,
+    strategyId,
+    tradeIndex,
+  };
+};
+
+export const getParamsFromCsoTradeUnsplitEventId = (
+  eventId: string,
+): CsoUnsplitParams => {
+  const eventParams = eventId.split('-');
+
+  if (eventParams.length !== 5)
+    throw Error(
+      `Invalid eventId provided: ${eventId}. Expected format [provider]-[strategyId]-[numTrades]-[trades]-[startDate]`,
+    );
+
+  const [provider, strategyId, numTradesStr, , startDateStr] = eventParams;
+
+  const numTrades = parseInt(numTradesStr);
+
+  if (isNaN(numTrades))
+    throw Error(
+      `Invalid numTrades provided: ${numTradesStr}. Expected integer`,
+    );
+
+  if (!STR_DATE_REGEX.test(startDateStr))
+    throw new Error(`Invalid start date provided: ${startDateStr}`);
+
+  const startDate = extractCsoEventIdDateFromStr(startDateStr);
+
+  return {
+    provider,
+    strategyId,
+    numTrades,
+    startDate,
+  };
+};
+
+/**
+ * getParamsFromManualEventId
+ *
+ * Pass in eventId and return provider, source, maturity, and symbol
+ *
+ * @param {string} eventId format [provider]-[source]-[symbol]-[maturity]
+ * @returns {ManualEventParams} provider, source, maturity, and symbol
+ */
+export const getParamsFromManualEventId = (
+  eventId: string,
+): ManualEventParams => {
+  const eventParams = eventId.split('-');
+
+  if (eventParams.length !== 4)
+    throw Error(
+      `Invalid eventId provided: ${eventId}. Expected format [provider]-[source]-[symbol]-[maturity]`,
+    );
+
+  const [provider, source, symbol, maturityStr] = eventParams;
+
+  if (!STR_DATE_REGEX.test(maturityStr))
+    throw new Error(`Invalid maturity date provided: ${maturityStr}`);
+
+  const maturity = extractCsoEventIdDateFromStr(maturityStr);
+
+  return {
+    provider,
+    source,
+    symbol,
+    maturity,
+  };
+};
+
+export const getCsoEventIdType = (eventId: string): CsoEventIdType => {
+  const eventParams = eventId.split('-');
+
+  // Check the length and specific parts of the split eventId to determine its type
+  switch (eventParams.length) {
+    case 5:
+      // If the eventId splits into 5 parts, it could be 'period' or 'unsplit'
+      // Check the fourth part to differentiate
+      return eventParams[3] === 'trades' ? 'unsplit' : 'period';
+    case 4:
+      // If the eventId splits into 4 parts, it's a 'split'
+      return 'split';
+    default:
+      // If the eventId doesn't match the above cases, throw an error
+      throw new Error(`Invalid eventId provided: ${eventId}`);
+  }
+};
+
+export const getEventIdType = (eventId: string): CsoEventIdType | 'manual' => {
+  const eventParams = eventId.split('-');
+
+  // Check if the eventId is of type 'manual'
+  if (eventParams.length === 4 && eventParams[2] !== 'trade') {
+    return 'manual';
+  }
+
+  // If not 'manual', use the existing function to determine the type
+  return getCsoEventIdType(eventId);
 };
 
 /**
@@ -527,6 +707,26 @@ export interface CsoParams {
   period: string;
   startDate: Date;
   endDate: Date;
+}
+
+export interface CsoSplitParams {
+  provider: string;
+  strategyId: string;
+  tradeIndex: number;
+}
+
+export interface CsoUnsplitParams {
+  provider: string;
+  strategyId: string;
+  numTrades: number;
+  startDate: Date;
+}
+
+export interface ManualEventParams {
+  provider: string;
+  source: string;
+  symbol: string;
+  maturity: Date;
 }
 
 export interface CsoEventDates {

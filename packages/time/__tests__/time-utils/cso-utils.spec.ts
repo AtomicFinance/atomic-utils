@@ -10,12 +10,20 @@ import {
   getCsoEvent,
   getCsoEventDates,
   getCsoEventId,
+  getCsoEventIdType,
   getCsoLength,
   getCsoStartAndEndDate,
+  getCsoTradeSplitEventId,
+  getCsoTradeUnsplitEventId,
   getCurrentCycleMaturityDate,
+  getEventIdType,
   getLastFridayInMonth,
+  getManualEventId,
   getNextCycleMaturityDate,
   getParamsFromCsoEventId,
+  getParamsFromCsoTradeSplitEventId,
+  getParamsFromCsoTradeUnsplitEventId,
+  getParamsFromManualEventId,
   getPreviousCycleMaturityDate,
   getPreviousFriday,
   getUpcomingFriday,
@@ -853,6 +861,114 @@ describe('CSO utilities', () => {
       it('should return "two-months" for a two months event', () => {
         const eventId = 'atomic-oyster-monthly-3JUL23-25AUG23';
         expect(getCsoLength(eventId)).to.equal('two-months');
+      });
+    });
+  });
+
+  describe('Split Trades', () => {
+    describe('getCsoTradeSplitEventId', () => {
+      it('should generate split eventId properly', () => {
+        const splitEventId = getCsoTradeSplitEventId('atomic', 'engine', 44);
+
+        expect(splitEventId).to.equal('atomic-engine-trade-44');
+      });
+    });
+
+    describe('getParamsFromCsoTradeSplitEventId', () => {
+      it('should get params from split eventId properly', () => {
+        const splitEventId = 'atomic-engine-trade-44';
+
+        const { provider, strategyId, tradeIndex } =
+          getParamsFromCsoTradeSplitEventId(splitEventId);
+
+        expect(provider).to.equal('atomic');
+        expect(strategyId).to.equal('engine');
+        expect(tradeIndex).to.equal(44);
+      });
+    });
+
+    describe('getCsoTradeUnsplitEventId', () => {
+      it('should generate split eventId properly', () => {
+        const unsplitEventId = getCsoTradeUnsplitEventId(
+          lastFridays[0],
+          'atomic',
+          'oyster',
+          5,
+        );
+
+        expect(unsplitEventId).to.equal('atomic-oyster-5-trades-28JAN22');
+      });
+    });
+
+    describe('getParamsFromCsoTradeUnsplitEventId', () => {
+      it('should get params from unsplit eventId properly', () => {
+        const unsplitEventId = 'atomic-oyster-5-trades-28JAN22';
+
+        const { provider, strategyId, numTrades, startDate } =
+          getParamsFromCsoTradeUnsplitEventId(unsplitEventId);
+
+        expect(provider).to.equal('atomic');
+        expect(strategyId).to.equal('oyster');
+        expect(numTrades).to.equal(5);
+        expect(startDate.getTime()).to.equal(lastFridays[0].getTime());
+      });
+    });
+
+    describe('getManualEventId', () => {
+      it('should generate manual eventId properly', () => {
+        const provider = 'atomic';
+        const source = 'deribit';
+        const maturity = lastFridays[0];
+        const symbol = 'BTC';
+
+        const manualEventId = getManualEventId(
+          provider,
+          source,
+          maturity,
+          symbol,
+        );
+
+        expect(manualEventId).to.equal('atomic-deribit-BTC-28JAN22');
+      });
+    });
+
+    describe('getParamsFromManualEventId', () => {
+      it('should get params from manual eventId properly', () => {
+        const manualEventId = 'atomic-deribit-BTC-28JAN22';
+
+        const { provider, source, symbol, maturity } =
+          getParamsFromManualEventId(manualEventId);
+
+        expect(provider).to.equal('atomic');
+        expect(source).to.equal('deribit');
+        expect(symbol).to.equal('BTC');
+        expect(maturity.getTime()).to.equal(lastFridays[0].getTime());
+      });
+    });
+
+    describe('getCsoEventIdType', () => {
+      it('should output the correct eventId type', () => {
+        const csoEventId = 'atomic-oyster-monthly-1AUG22-26AUG22';
+        const splitEventId = 'atomic-engine-trade-44';
+        const unsplitEventId = 'atomic-oyster-5-trades-28JAN22';
+
+        expect(getCsoEventIdType(csoEventId)).to.equal('period');
+        expect(getCsoEventIdType(splitEventId)).to.equal('split');
+        expect(getCsoEventIdType(unsplitEventId)).to.equal('unsplit');
+      });
+    });
+
+    describe('getEventIdType', () => {
+      it('should correctly identify the type of eventId', () => {
+        const periodEventId = 'atomic-oyster-monthly-1AUG22-26AUG22';
+        const splitEventId = 'atomic-engine-trade-44';
+        const unsplitEventId = 'atomic-oyster-5-trades-28JAN22';
+        const manualEventId = 'atomic-deribit-BTC-14JUL23';
+
+        expect(getEventIdType(periodEventId)).to.equal('period');
+        expect(getEventIdType(splitEventId)).to.equal('split');
+        expect(getEventIdType(unsplitEventId)).to.equal('unsplit');
+        expect(getEventIdType(manualEventId)).to.equal('manual');
       });
     });
   });
