@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "@atomic-utils/deribit": "^0.4.3",
-    "@sentry/node": "6.16.1"
+    "@sentry/node": "6.16.1",
+    "moment-timezone": "0.5.45"
   },
   "devDependencies": {
     "sentry-testkit": "3.3.7",

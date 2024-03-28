@@ -27,6 +27,7 @@ export const TRADING_OPEN_HALF_MONTH_LEN = 334;
 
 import { getStrDate } from '@atomic-utils/deribit';
 import assert from 'assert';
+import moment from 'moment-timezone';
 
 export const STR_DATE_REGEX = /(\d{1,2})([A-Z]+)(\d{1,2})/;
 
@@ -567,9 +568,12 @@ export const getEventIdType = (eventId: string): CsoEventIdType | 'manual' => {
 export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
   const [, day, month, year] = dateStr.match(STR_DATE_REGEX);
 
+  // Use moment-timezone to parse the date string and set it to 12 PM UTC
   // Set date to 12 PM UTC since it is between DLC Expiry and DLC Attestation
   // and also after Trading Open and Trading Open Half Month
-  const date = new Date(`${month}-${day}-${year} 12:00:00 GMT`);
+  const date = moment
+    .tz(`${day} ${month} ${year} 12:00:00`, 'DD MMM YY HH:mm:ss', 'UTC')
+    .toDate();
 
   const csoEvent = getCsoEvent(date);
   const {
