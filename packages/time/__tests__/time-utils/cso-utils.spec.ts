@@ -605,6 +605,14 @@ describe('CSO utilities', () => {
           `Invalid start or end date provided. Start Date: ${invalidStartDate}. End Date: ${endDate}`,
         );
       });
+
+      it('should succeed getting params from cso event id two months', () => {
+        const { startDate, endDate } = getParamsFromCsoEventId(
+          'atomic-engine-monthly-1APR24-31MAY24',
+        );
+        expect(startDate.getTime()).to.equal(1711944000000);
+        expect(endDate.getTime()).to.equal(1717142400000);
+      });
     });
 
     describe('extractCsoEventIdDateFromStr', () => {
