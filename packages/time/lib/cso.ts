@@ -566,29 +566,10 @@ export const getEventIdType = (eventId: string): CsoEventIdType | 'manual' => {
  */
 export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
   const [, day, month, year] = dateStr.match(STR_DATE_REGEX);
-  const monthIndex =
-    [
-      'JAN',
-      'FEB',
-      'MAR',
-      'APR',
-      'MAY',
-      'JUN',
-      'JUL',
-      'AUG',
-      'SEP',
-      'OCT',
-      'NOV',
-      'DEC',
-    ].indexOf(month) + 1;
 
-  // Create a date at 00:00:00 UTC on the given day
-  const date = new Date(
-    Date.UTC(parseInt(year) + 2000, monthIndex - 1, parseInt(day)),
-  );
-
-  // Add 12 hours to set the time to 12 PM UTC
-  date.setUTCHours(12);
+  // Set date to 12 PM UTC since it is between DLC Expiry and DLC Attestation
+  // and also after Trading Open and Trading Open Half Month
+  const date = new Date(`${month}-${day}-${year} 12:00:00 GMT`);
 
   // Set date to 12 PM UTC since it is between DLC Expiry and DLC Attestation
   // and also after Trading Open and Trading Open Half Month
@@ -613,6 +594,8 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
     } else if (date.getUTCDate() === previousDlcExpiry.getUTCDate()) {
       return previousDlcExpiry;
     }
+  } else if (csoEvent === 'newEntryClosed') {
+    return newEntryClosed;
   } else {
     throw Error(
       `eventId dateStr invalid and likely on rollover weekend. CsoEvent: ${csoEvent}`,
