@@ -23,7 +23,7 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@node-dlc/logger": "^0.22.6",
+    "@node-dlc/logger": "0.23.2",
     "axios": "0.27.2"
   },
   "devDependencies": {
