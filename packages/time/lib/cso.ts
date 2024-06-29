@@ -596,10 +596,6 @@ export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
     }
   } else if (csoEvent === 'newEntryClosed') {
     return newEntryClosed;
-  } else {
-    throw Error(
-      `eventId dateStr invalid and likely on rollover weekend. CsoEvent: ${csoEvent}`,
-    );
   }
   return date;
 };
