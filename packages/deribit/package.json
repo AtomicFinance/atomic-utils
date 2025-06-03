@@ -24,9 +24,9 @@
   },
   "dependencies": {
     "@atomic-utils/format": "^0.4.13",
-    "@node-dlc/core": "0.23.6",
-    "@node-dlc/logger": "0.23.6",
-    "@node-dlc/messaging": "0.23.6",
+    "@node-dlc/core": "0.24.0",
+    "@node-dlc/logger": "0.24.0",
+    "@node-dlc/messaging": "0.24.0",
     "@sentry/node": "6.16.1",
     "bip174": "2.0.1",
     "bitcoinjs-lib": "5.2.0"
