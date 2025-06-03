@@ -24,10 +24,10 @@
   },
   "dependencies": {
     "@atomic-utils/deribit": "^0.4.13",
-    "@sentry/node": "6.16.1",
     "moment-timezone": "0.5.45"
   },
   "devDependencies": {
+    "@types/node": "16.10.3",
     "sentry-testkit": "3.3.7",
     "wait-for-expect": "3.0.2"
   },

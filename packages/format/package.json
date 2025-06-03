@@ -23,7 +23,6 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@sentry/node": "6.16.1",
     "bignumber.js": "^9.0.2"
   },
   "devDependencies": {
