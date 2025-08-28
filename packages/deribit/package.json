@@ -1,6 +1,6 @@
 {
   "name": "@atomic-utils/deribit",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Atomic Utils Deribit",
   "scripts": {
     "test": "../../node_modules/.bin/nyc --reporter=lcov --reporter=text --extension=.ts ../../node_modules/.bin/mocha --require ts-node/register --recursive \"__tests__/**/*.spec.*\"",
@@ -23,7 +23,7 @@
     "url": "git+https://github.com/atomicfinance/atomic-utils.git"
   },
   "dependencies": {
-    "@atomic-utils/format": "^0.5.0",
+    "@atomic-utils/format": "^0.6.0",
     "@node-dlc/core": "1.1.0",
     "@node-dlc/logger": "1.1.0",
     "@node-dlc/messaging": "1.1.0"
@@ -35,5 +35,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "b04ea03a2c0cabe985948ecf004bf13f054a705b"
 }
