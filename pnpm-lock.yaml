@@ -120,6 +120,9 @@ importers:
 
   packages/contract:
     dependencies:
+      '@atomic-utils/format':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@node-dlc/core':
         specifier: 1.1.0
         version: 1.1.0
@@ -145,6 +148,9 @@ importers:
       '@atomic-utils/format':
         specifier: ^0.5.0
         version: 0.5.0
+      '@node-dlc/core':
+        specifier: 1.1.0
+        version: 1.1.0
       '@node-dlc/logger':
         specifier: 1.1.0
         version: 1.1.0

@@ -1,5 +1,5 @@
 import { DualFundingTxFinalizer } from '@node-dlc/core';
-import { FundingInputV0 } from '@node-dlc/messaging';
+import { FundingInput } from '@node-dlc/messaging';
 const p2wpkhSPK = Buffer.from(
   '0014663117d27e78eb432505180654e603acb30e8a4a',
   'hex',
@@ -19,7 +19,7 @@ export const buildDualFundingTxFinalizer = (
     throw new Error('Fee rate must be non-negative');
   }
 
-  const fundingInput = new FundingInputV0();
+  const fundingInput = new FundingInput();
 
   fundingInput.maxWitnessLen = 108;
   fundingInput.redeemScript = Buffer.from([]);

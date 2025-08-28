@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@atomic-utils/format": "^0.5.0",
+    "@node-dlc/core": "1.1.0",
     "@node-dlc/logger": "1.1.0",
     "@node-dlc/messaging": "1.1.0"
   },
