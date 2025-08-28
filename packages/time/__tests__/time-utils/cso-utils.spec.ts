@@ -633,6 +633,30 @@ describe('CSO utilities', () => {
 
         expect(date.getTime()).to.equal(previousDlcExpiry.getTime());
       });
+
+      it('should handle React Native problematic date formats', () => {
+        // Test the specific date formats that were causing issues in React Native
+        const problematicDates = [
+          '29MAY23', // atomic-oyster-monthly-29MAY23-30JUN23
+          '3JUL23', // atomic-oyster-monthly-3JUL23-28JUL23
+          '31JUL23', // atomic-oyster-monthly-31JUL23-25AUG23
+        ];
+
+        problematicDates.forEach((dateStr) => {
+          const date = extractCsoEventIdDateFromStr(dateStr);
+          expect(date).to.be.instanceOf(Date);
+          expect(isNaN(date.getTime())).to.be.false;
+          expect(date.getTime()).to.be.greaterThan(0);
+        });
+      });
+
+      it('should throw error for invalid month abbreviation', () => {
+        const invalidDateStr = '15INV23';
+        expect(() => extractCsoEventIdDateFromStr(invalidDateStr)).to.throw(
+          Error,
+          'Invalid month abbreviation: INV',
+        );
+      });
     });
 
     describe('findCycleMaturityMonthsInPast', () => {
@@ -977,6 +1001,20 @@ describe('CSO utilities', () => {
         expect(getEventIdType(splitEventId)).to.equal('split');
         expect(getEventIdType(unsplitEventId)).to.equal('unsplit');
         expect(getEventIdType(manualEventId)).to.equal('manual');
+      });
+    });
+
+    describe('should parse eventId', () => {
+      it('should parse eventId properly', () => {
+        const eventId = 'atomic-oyster-monthly-3JUL23-28JUL23';
+        const { provider, strategyId, period, startDate, endDate } =
+          getParamsFromCsoEventId(eventId);
+
+        expect(provider).to.equal('atomic');
+        expect(strategyId).to.equal('oyster');
+        expect(period).to.equal('monthly');
+        expect(startDate.getTime()).to.equal(1688356800000);
+        expect(endDate.getTime()).to.equal(1690531200000);
       });
     });
   });

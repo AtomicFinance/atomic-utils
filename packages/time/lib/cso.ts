@@ -567,12 +567,40 @@ export const getEventIdType = (eventId: string): CsoEventIdType | 'manual' => {
 export const extractCsoEventIdDateFromStr = (dateStr: string): Date => {
   const [, day, month, year] = dateStr.match(STR_DATE_REGEX);
 
-  // Set date to 12 PM UTC since it is between DLC Expiry and DLC Attestation
-  // and also after Trading Open and Trading Open Half Month
-  const date = new Date(`${month}-${day}-${year} 12:00:00 GMT`);
+  // Create a more reliable date parsing that works across all JS environments
+  // Map month abbreviations to month numbers (0-indexed)
+  const monthMap: { [key: string]: number } = {
+    JAN: 0,
+    FEB: 1,
+    MAR: 2,
+    APR: 3,
+    MAY: 4,
+    JUN: 5,
+    JUL: 6,
+    AUG: 7,
+    SEP: 8,
+    OCT: 9,
+    NOV: 10,
+    DEC: 11,
+  };
 
-  // Set date to 12 PM UTC since it is between DLC Expiry and DLC Attestation
-  // and also after Trading Open and Trading Open Half Month
+  const monthNum = monthMap[month];
+  if (monthNum === undefined) {
+    throw new Error(`Invalid month abbreviation: ${month}`);
+  }
+
+  // Convert 2-digit year to 4-digit year (assuming 20xx for years 00-99)
+  const fullYear =
+    parseInt(year) < 50 ? 2000 + parseInt(year) : 1900 + parseInt(year);
+  const dayNum = parseInt(day);
+
+  // Create date using UTC constructor for consistency
+  const date = new Date(Date.UTC(fullYear, monthNum, dayNum, 12, 0, 0, 0));
+
+  // Validate the date was created successfully
+  if (isNaN(date.getTime())) {
+    throw new Error(`Invalid date created from: ${dateStr}`);
+  }
 
   const csoEvent = getCsoEvent(date);
   const {
