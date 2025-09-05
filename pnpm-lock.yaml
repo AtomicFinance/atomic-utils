@@ -102,8 +102,8 @@ importers:
   packages/clients:
     dependencies:
       '@node-dlc/logger':
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 1.1.1
+        version: 1.1.1
       axios:
         specifier: 0.27.2
         version: 0.27.2
@@ -121,8 +121,8 @@ importers:
   packages/contract:
     dependencies:
       '@atomic-utils/format':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.0
+        version: 0.6.0
       '@node-dlc/core':
         specifier: 1.1.0
         version: 1.1.0
@@ -146,17 +146,17 @@ importers:
   packages/deribit:
     dependencies:
       '@atomic-utils/format':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.0
+        version: 0.6.0
       '@node-dlc/core':
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 1.1.1
+        version: 1.1.1
       '@node-dlc/logger':
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 1.1.1
+        version: 1.1.1
       '@node-dlc/messaging':
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 1.1.1
+        version: 1.1.1
     devDependencies:
       '@types/node':
         specifier: ^18.19.123
@@ -187,8 +187,8 @@ importers:
   packages/logger:
     dependencies:
       '@node-dlc/logger':
-        specifier: 1.1.0
-        version: 1.1.0
+        specifier: 1.1.1
+        version: 1.1.1
       '@sentry/node':
         specifier: 6.16.1
         version: 6.16.1
@@ -203,8 +203,8 @@ importers:
   packages/time:
     dependencies:
       '@atomic-utils/deribit':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.6.0
+        version: 0.6.0
       moment-timezone:
         specifier: 0.5.45
         version: 0.5.45
@@ -225,11 +225,11 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@atomic-utils/deribit@0.5.0':
-    resolution: {integrity: sha512-HNtzsFXs3qhLkP5SPDFjQdL8NqTn5XVKgVlrob4H30mGu7kNUOtdBKFo3WmXawQa+MmOA2DvSSZMs0Dd4nGkfw==}
+  '@atomic-utils/deribit@0.6.0':
+    resolution: {integrity: sha512-CmOn+IgqL7Gvijxw/KLqSmrPiOBGE0n6tbX+lj7GbEiEJMXd6GaSf2h672jTBN8JF8sgI2h7J71Bd22UsklQuA==}
 
-  '@atomic-utils/format@0.5.0':
-    resolution: {integrity: sha512-bU+entWTxqvy52tYHCxM3jlfhnI5i6dnlNwxCjQ/hIDJMX2pOEjhSoBL8R66CKUfvSaXGA2b2AZldJaq4UBcSw==}
+  '@atomic-utils/format@0.6.0':
+    resolution: {integrity: sha512-67Kaf+GfYyxUBIWeHhNS134ybJXVqblsK5ptpUcNCPo9Fn2ZZ+aCeZMb1qmD0dObJRrVY6BpBSqGZ5IJImV/8g==}
 
   '@babel/code-frame@7.12.11':
     resolution: {integrity: sha512-Zt1yodBx1UcyiePMSkWnU4hPqhwq7hGi2nFL1LeA3EUl+q2LQx16MISgJ0+z7dnmgvP9QtIleuETGOiOH1RcIw==}
@@ -666,70 +666,67 @@ packages:
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
 
-  '@node-dlc/bitcoin@0.24.1':
-    resolution: {integrity: sha512-8+DgpHsN9HkWslsGEHRZgy2WuG/58lVmocR//fQFXl6Lo3yEVcb56M8dnjZEJnQi8fOwsZei7BhtgtG/qmb9dA==}
-
   '@node-dlc/bitcoin@1.1.0':
     resolution: {integrity: sha512-kbHif5lkliuuK1IbLxH+Y+pQ0AxPVn8nDKsPQoMLa0wvHeA1rsf6WNNebBy0jEdht4M3Btj9rEwooCKeA2TdLQ==}
 
-  '@node-dlc/bufio@0.24.1':
-    resolution: {integrity: sha512-1SQ4TjE49l766la79Nis9XyZLSI3Bx8yoMNx3bU8IYidfEM9R/UwwYuO1fWA/Ii9ngAUc8fcupSYVYmVCuAulw==}
+  '@node-dlc/bitcoin@1.1.1':
+    resolution: {integrity: sha512-UmTkGnmsSs2Zi+lH/HbUlcZmJ33FkDeQ5JUb7f09BdFSxY5LgneZrKf+JLNusR74ePZ+wTsezrsBFRiQoFY9Kg==}
 
   '@node-dlc/bufio@1.1.0':
     resolution: {integrity: sha512-3qoCLNUB5ZXkmMsEHibYN+V2QpYVe7HrZPWN/yEIMKvbiAVVK4i9bDdGekWbnPBt0qtypbpby3MT6wqptpufOg==}
 
-  '@node-dlc/checksum@0.24.1':
-    resolution: {integrity: sha512-5brtHcotO5D2I/wbc4V7v5PZI8Zar1JhZs8xUkznrS3fIgSjwpqHPunIze89pOAw51CtnNvBXKxrziZDUC+dVA==}
+  '@node-dlc/bufio@1.1.1':
+    resolution: {integrity: sha512-oKJGc8TUsTG+KuPcfp1NrxYMAati5xT41CcHo56GEL2SS5HLBV/xegzBhOIfd33dOfH9QoHZPjVSqE6MZ6YsGg==}
 
   '@node-dlc/checksum@1.1.0':
     resolution: {integrity: sha512-oWoSVkursXdIdua7sVlZDV/7RedhlXu0CtKDcNcNOCrCWOfz1QiuGab7eAIn8p5L7sLS+jymLLh8ZlTexRqrlQ==}
 
-  '@node-dlc/common@0.24.1':
-    resolution: {integrity: sha512-Lbf9wApqmkKsl96UFQVD6XfDl2yGr+Fnk7N5hyvCkHKhiMqp3rfFXG4XwKyZfEadLq88TdiByfXbUnuKs58xog==}
+  '@node-dlc/checksum@1.1.1':
+    resolution: {integrity: sha512-M6ZnL7MsEwEwLtCc1fd7IFNS/Q/M0jnMANQnqMCysAoQR8FfrVwObHwO2SzMeqlfc1bH1/I67w52yaGP3WvywA==}
 
   '@node-dlc/common@1.1.0':
     resolution: {integrity: sha512-64mMepx1F2pfJA+GqyMTuX+45eaafA68z713vUdyBx9CKmRwcSA5YKa8VFUOmhPA6DQUjKDAFRVfTUTYanpu3g==}
 
-  '@node-dlc/core@0.24.0':
-    resolution: {integrity: sha512-oV7OONgiHCwYvknnhW16H7JXvyoTQMy6pyiuIShbXCEUrP2THoHn1I+vDyV21fAC5+X0MVIlPSYQLu+h/InmCw==}
+  '@node-dlc/common@1.1.1':
+    resolution: {integrity: sha512-aTcFMHSUWk9s3pe6CSf2wE5Pm6A6DoOCMuwhA/CqizTg+pcbhE0Bh9dI8CqKvucjLgdH/1L9gyFwvABIVH8e+g==}
 
   '@node-dlc/core@1.1.0':
     resolution: {integrity: sha512-Nau61w1IPdnnlLvgX2JjmZyQ3+bnUyKn7cP03bdj9aaNHcC3nblKMyC8Man4q5q1RTYz/oYt/i3X0Ee2oeWZOw==}
 
-  '@node-dlc/crypto@0.24.1':
-    resolution: {integrity: sha512-vVWVmgzU7iES7sEQ8Svx2E2M9erh6iAyl1t0nbWGAFLSNB/C+CVThNu1ltoP5NrWgZT1oiCXKgWB6FI8DNHoow==}
-    engines: {node: '>=10.17'}
+  '@node-dlc/core@1.1.1':
+    resolution: {integrity: sha512-ve8yQttVO7ai2Ve6WX/f2NAPV24Iln9y2wKSDEYsHoPR5kMPrRQ3n6yADBp0zTQpM8Ths9TJMwiBeaOCIw8xgw==}
 
   '@node-dlc/crypto@1.1.0':
     resolution: {integrity: sha512-w4HmTDpB4uc0dviCH0sk7kmH3wZ1qwzvV7bxFum5oves5PQPvn6npHQu5h9KbySmAJxIBsM7sUfKulvMLE52BQ==}
     engines: {node: '>=10.17'}
 
-  '@node-dlc/logger@0.24.0':
-    resolution: {integrity: sha512-Wg/wW5uOeI2rhDKVz/vSzAOqAtlB9nJOVjYGZRwZn9eSDmIPZEfZ0dgzFnx80SsS7AGneGt7qJ+NvAjKWJ6MeA==}
-
-  '@node-dlc/logger@0.24.1':
-    resolution: {integrity: sha512-kVQwhfwGF2sZVWTZLg0QYl0hgx/kFAtKVgq7ovz41XLgwi30hSo/6GghMr7wtQAmnlmgNYQLGfmIseE8PjabWg==}
+  '@node-dlc/crypto@1.1.1':
+    resolution: {integrity: sha512-HiWXxsF1zLtepvS3cYeX+CVJHT/WxU6UDd/IkmbzmcMRUhHedyAaHq7PiaOA5B2QSyANNm41Sb3f618vy5mdjA==}
+    engines: {node: '>=10.17'}
 
   '@node-dlc/logger@1.1.0':
     resolution: {integrity: sha512-Jv24jq6iiW0NUx2Cmj8ro9EBv84Ed5WPqzpdydmTshBiaGP3SkEsu2IFtbPQHOiiMsYs5+Xr4SJtI75W1tXoqQ==}
 
-  '@node-dlc/messaging@0.24.0':
-    resolution: {integrity: sha512-QsINenG4UGHS0/qzD9EqOG5o1lGiykLq+YLazE5G0AJ4y6HTXSGCJZHSprerpFiSeb0A7Q9nkLQwysUq7T5yhw==}
+  '@node-dlc/logger@1.1.1':
+    resolution: {integrity: sha512-z3QBN+Ct5nSVt+uTPNC3IZ2lP0P33OP3N1m3HRD1MevnZhdtcqtf672l2tU4UP9vMdiwe4r6dj8jyjgPJ4GuXw==}
 
   '@node-dlc/messaging@1.1.0':
     resolution: {integrity: sha512-YHZ5+qflSFHu4tksYKUq5nB9YpSphXBXlWKu1TAsf2oie53dGACoW6zYRGuu0Hloh2SlBFLC1UwGx9FS94+dww==}
 
-  '@node-dlc/noise@0.24.1':
-    resolution: {integrity: sha512-PkmE5OFHbneUQHgM2dd4fwCfEnHdj21nvKpsqSw99Ypud+I8oZJgDSNLwQtK5n38+vC8Efc+XauxATGByLGEWw==}
+  '@node-dlc/messaging@1.1.1':
+    resolution: {integrity: sha512-wv2sV49AYE3A+OG7mMVc5AWjasBMp/alE1jyv6/EWiLd2g2qe5cuDhr+MCb3fhLjnD97Bwy4iIUxYTg6i9Yk2A==}
 
   '@node-dlc/noise@1.1.0':
     resolution: {integrity: sha512-wbavo6eMEpRiEqPwYqskLWpMO8LR9LPgQzazBv/hSA/fvAsXyLRqgB6qBNxYi4HohUxtyFDVYpDEy+LZAfeLXw==}
 
-  '@node-dlc/wire@0.24.1':
-    resolution: {integrity: sha512-N9ion42jTm2GbcVjrlPDMawOBe5zxOU3XhEbwoULTFJzVRVLtMGT/ywA+08nfjnIMh8rdka1XnodGw8TsxTVNg==}
+  '@node-dlc/noise@1.1.1':
+    resolution: {integrity: sha512-TrP+kRMh3b0R/A1iQ/N9Mv8e9GFO0XB6vSrJGgvKlHOPxLfV6kg4rC4kem+/bVzlLzfBjGrTPuiKmeuDp76Ytg==}
 
   '@node-dlc/wire@1.1.0':
     resolution: {integrity: sha512-oPl2CBy1oJjbgdbtf5jpaolE72MJ5vvZZs08MXJZ1U6Mp3dSzu53VY7MTdqSrpZ50sNvvf8mWxKf41lNAY0sEQ==}
+
+  '@node-dlc/wire@1.1.1':
+    resolution: {integrity: sha512-hzQ8Kli5wJxR9pmFIWafbO3ZlU5IFT8T3lCNLsnB9kJkItcBc1DgbQf2v4e6NK+T/LjortrRPSuNmmwxFE6Pyg==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -4309,16 +4306,14 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.30
 
-  '@atomic-utils/deribit@0.5.0':
+  '@atomic-utils/deribit@0.6.0':
     dependencies:
-      '@atomic-utils/format': 0.5.0
-      '@node-dlc/core': 0.24.0
-      '@node-dlc/logger': 0.24.0
-      '@node-dlc/messaging': 0.24.0
-      bip174: 2.0.1
-      bitcoinjs-lib: 5.2.0
+      '@atomic-utils/format': 0.6.0
+      '@node-dlc/core': 1.1.0
+      '@node-dlc/logger': 1.1.0
+      '@node-dlc/messaging': 1.1.0
 
-  '@atomic-utils/format@0.5.0':
+  '@atomic-utils/format@0.6.0':
     dependencies:
       bignumber.js: 9.3.1
 
@@ -5024,45 +5019,37 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
-  '@node-dlc/bitcoin@0.24.1':
-    dependencies:
-      '@node-dlc/bufio': 0.24.1
-      '@node-dlc/crypto': 0.24.1
-
   '@node-dlc/bitcoin@1.1.0':
     dependencies:
       '@node-dlc/bufio': 1.1.0
       '@node-dlc/crypto': 1.1.0
 
-  '@node-dlc/bufio@0.24.1': {}
+  '@node-dlc/bitcoin@1.1.1':
+    dependencies:
+      '@node-dlc/bufio': 1.1.1
+      '@node-dlc/crypto': 1.1.1
 
   '@node-dlc/bufio@1.1.0':
     dependencies:
       decimal.js: 10.4.3
 
-  '@node-dlc/checksum@0.24.1': {}
+  '@node-dlc/bufio@1.1.1':
+    dependencies:
+      decimal.js: 10.4.3
 
   '@node-dlc/checksum@1.1.0': {}
 
-  '@node-dlc/common@0.24.1':
-    dependencies:
-      '@node-dlc/bitcoin': 0.24.1
-      '@node-dlc/bufio': 0.24.1
+  '@node-dlc/checksum@1.1.1': {}
 
   '@node-dlc/common@1.1.0':
     dependencies:
       '@node-dlc/bitcoin': 1.1.0
       '@node-dlc/bufio': 1.1.0
 
-  '@node-dlc/core@0.24.0':
+  '@node-dlc/common@1.1.1':
     dependencies:
-      '@node-dlc/bitcoin': 0.24.1
-      '@node-dlc/bufio': 0.24.1
-      '@node-dlc/common': 0.24.1
-      '@node-dlc/crypto': 0.24.1
-      bignumber.js: 9.3.1
-      bitcoin-networks: 1.0.0
-      decimal.js: 10.4.3
+      '@node-dlc/bitcoin': 1.1.1
+      '@node-dlc/bufio': 1.1.1
 
   '@node-dlc/core@1.1.0':
     dependencies:
@@ -5075,32 +5062,28 @@ snapshots:
       bitcoin-networks: 1.0.0
       decimal.js: 10.4.3
 
-  '@node-dlc/crypto@0.24.1':
+  '@node-dlc/core@1.1.1':
     dependencies:
-      secp256k1: 4.0.4
+      '@node-dlc/bitcoin': 1.1.1
+      '@node-dlc/bufio': 1.1.1
+      '@node-dlc/common': 1.1.1
+      '@node-dlc/crypto': 1.1.1
+      '@node-dlc/messaging': 1.1.1
+      bignumber.js: 9.3.1
+      bitcoin-networks: 1.0.0
+      decimal.js: 10.4.3
 
   '@node-dlc/crypto@1.1.0':
     dependencies:
       secp256k1: 4.0.4
 
-  '@node-dlc/logger@0.24.0': {}
-
-  '@node-dlc/logger@0.24.1': {}
+  '@node-dlc/crypto@1.1.1':
+    dependencies:
+      secp256k1: 4.0.4
 
   '@node-dlc/logger@1.1.0': {}
 
-  '@node-dlc/messaging@0.24.0':
-    dependencies:
-      '@node-dlc/bitcoin': 0.24.1
-      '@node-dlc/bufio': 0.24.1
-      '@node-dlc/checksum': 0.24.1
-      '@node-dlc/common': 0.24.1
-      '@node-dlc/crypto': 0.24.1
-      '@node-dlc/wire': 0.24.1
-      bip-schnorr: 0.6.3
-      bitcoin-networks: 1.0.0
-      bitcoinjs-lib: 5.2.0
-      secp256k1: 4.0.4
+  '@node-dlc/logger@1.1.1': {}
 
   '@node-dlc/messaging@1.1.0':
     dependencies:
@@ -5118,25 +5101,31 @@ snapshots:
       json-bigint: 1.0.0
       secp256k1: 4.0.4
 
-  '@node-dlc/noise@0.24.1':
+  '@node-dlc/messaging@1.1.1':
     dependencies:
-      '@node-dlc/crypto': 0.24.1
-      '@node-dlc/logger': 0.24.1
+      '@node-dlc/bitcoin': 1.1.1
+      '@node-dlc/bufio': 1.1.1
+      '@node-dlc/checksum': 1.1.1
+      '@node-dlc/common': 1.1.1
+      '@node-dlc/crypto': 1.1.1
+      '@node-dlc/wire': 1.1.1
+      '@types/json-bigint': 1.0.4
+      bip-schnorr: 0.6.3
+      bitcoin-networks: 1.0.0
+      bitcoinjs-lib: 6.1.7
+      decimal.js: 10.4.3
+      json-bigint: 1.0.0
+      secp256k1: 4.0.4
 
   '@node-dlc/noise@1.1.0':
     dependencies:
       '@node-dlc/crypto': 1.1.0
-      '@node-dlc/logger': 1.1.0
+      '@node-dlc/logger': 1.1.1
 
-  '@node-dlc/wire@0.24.1':
+  '@node-dlc/noise@1.1.1':
     dependencies:
-      '@node-dlc/bitcoin': 0.24.1
-      '@node-dlc/bufio': 0.24.1
-      '@node-dlc/checksum': 0.24.1
-      '@node-dlc/common': 0.24.1
-      '@node-dlc/crypto': 0.24.1
-      '@node-dlc/logger': 0.24.1
-      '@node-dlc/noise': 0.24.1
+      '@node-dlc/crypto': 1.1.1
+      '@node-dlc/logger': 1.1.1
 
   '@node-dlc/wire@1.1.0':
     dependencies:
@@ -5145,8 +5134,18 @@ snapshots:
       '@node-dlc/checksum': 1.1.0
       '@node-dlc/common': 1.1.0
       '@node-dlc/crypto': 1.1.0
-      '@node-dlc/logger': 1.1.0
+      '@node-dlc/logger': 1.1.1
       '@node-dlc/noise': 1.1.0
+
+  '@node-dlc/wire@1.1.1':
+    dependencies:
+      '@node-dlc/bitcoin': 1.1.1
+      '@node-dlc/bufio': 1.1.1
+      '@node-dlc/checksum': 1.1.1
+      '@node-dlc/common': 1.1.1
+      '@node-dlc/crypto': 1.1.1
+      '@node-dlc/logger': 1.1.1
+      '@node-dlc/noise': 1.1.1
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
