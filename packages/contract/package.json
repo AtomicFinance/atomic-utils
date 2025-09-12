@@ -24,9 +24,9 @@
 	},
 	"dependencies": {
 		"@atomic-utils/format": "^0.6.1",
-		"@node-dlc/core": "1.1.0",
-		"@node-dlc/logger": "1.1.0",
-		"@node-dlc/messaging": "1.1.0"
+		"@node-dlc/core": "1.1.2",
+		"@node-dlc/logger": "1.1.2",
+		"@node-dlc/messaging": "1.1.2"
 	},
 	"devDependencies": {
 		"@types/node": "^18.19.123",
