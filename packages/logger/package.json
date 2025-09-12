@@ -1,6 +1,6 @@
 {
   "name": "@atomic-utils/logger",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Atomic Utils Logger",
   "scripts": {
     "test": "../../node_modules/.bin/nyc --reporter=lcov --reporter=text --extension=.ts ../../node_modules/.bin/mocha --require ts-node/register --recursive \"__tests__/**/*.spec.*\"",
@@ -33,5 +33,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "b04ea03a2c0cabe985948ecf004bf13f054a705b"
+  "gitHead": "40013f0e38d52d2bc4c9e7c0dad496116018601b"
 }
